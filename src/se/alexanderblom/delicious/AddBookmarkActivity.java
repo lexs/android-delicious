@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -34,6 +35,8 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	
 	private CallbackReceiver receiver;
 	
+	private Drawable errorDrawable;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +44,8 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
         setContentView(R.layout.activity_add_bookmark);
         
         setTitle(R.string.activity_add_bookmark_title);
+        
+        errorDrawable = DeliciousApplication.getErrorDrawable();
         
         deliciousAccount = new DeliciousAccount(this);
         
@@ -161,17 +166,17 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 		if (TextUtils.isEmpty(url)) {
 			valid = false;
 			
-			urlView.setError(getString(R.string.field_empty_error, getString(R.string.field_url)));
+			urlView.setError(getString(R.string.field_empty_error, getString(R.string.field_url)), errorDrawable);
 		} else if (!Patterns.WEB_URL.matcher(url).find()) {
 			valid = false;
 				
-			urlView.setError(getString(R.string.field_url_error));
+			urlView.setError(getString(R.string.field_url_error), errorDrawable);
 		}
 			
 		if (TextUtils.isEmpty(title)) {
 			valid = false;
 			
-			titleView.setError(getString(R.string.field_empty_error, getString(R.string.field_title)));
+			titleView.setError(getString(R.string.field_empty_error, getString(R.string.field_title)), errorDrawable);
 		}
 		
 		return valid;

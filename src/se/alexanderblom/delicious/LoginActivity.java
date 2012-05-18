@@ -9,6 +9,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -31,6 +32,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	
 	private EditText usernameView;
 	private EditText passwordView;
+	
+	private Drawable errorDrawable;
 	
 	private DeliciousAccount deliciousAccount;
 	
@@ -65,6 +68,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			}
 		});
 		
+		errorDrawable = DeliciousApplication.getErrorDrawable();
+		
 		deliciousAccount = new DeliciousAccount(this);
 		if (deliciousAccount.exists()) {
 			Toast.makeText(this, R.string.toast_account_exists, Toast.LENGTH_SHORT).show();
@@ -90,11 +95,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 			// Validation
 			if (TextUtils.isEmpty(username)) {
-				usernameView.setError(getString(R.string.field_empty_error, getString(R.string.field_username)));
+				usernameView.setError(getString(R.string.field_empty_error, getString(R.string.field_username)), errorDrawable);
 			}
 			
 			if (TextUtils.isEmpty(password)) {
-				passwordView.setError(getString(R.string.field_empty_error, getString(R.string.field_password)));
+				passwordView.setError(getString(R.string.field_empty_error, getString(R.string.field_password)), errorDrawable);
 			}
  		} else {
 			new LoginTask(username, password).execute();
