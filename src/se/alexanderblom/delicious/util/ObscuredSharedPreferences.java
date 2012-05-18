@@ -1,4 +1,4 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;

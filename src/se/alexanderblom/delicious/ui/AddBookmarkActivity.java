@@ -1,5 +1,11 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.ui;
 
+import se.alexanderblom.delicious.BookmarkService;
+import se.alexanderblom.delicious.DeliciousAccount;
+import se.alexanderblom.delicious.DeliciousApplication;
+import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.helpers.TitleFetcher;
+import se.alexanderblom.delicious.util.CallbackReceiver;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;

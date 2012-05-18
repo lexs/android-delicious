@@ -1,8 +1,16 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.ui;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import se.alexanderblom.delicious.Constants;
+import se.alexanderblom.delicious.DeliciousAccount;
+import se.alexanderblom.delicious.DeliciousApplication;
+import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.R.id;
+import se.alexanderblom.delicious.R.layout;
+import se.alexanderblom.delicious.R.string;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;

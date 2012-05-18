@@ -1,4 +1,4 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.account;
 
 import android.app.Service;
 import android.content.Intent;

@@ -1,4 +1,4 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.helpers;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -8,6 +8,9 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.R.id;
+import se.alexanderblom.delicious.R.string;
 import se.alexanderblom.delicious.util.AbstractTextWatcher;
 import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.Activity;

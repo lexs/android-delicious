@@ -1,10 +1,10 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.util;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 
-class CallbackReceiver extends ResultReceiver {
+public class CallbackReceiver extends ResultReceiver {
 	public interface Callback {
 		public void onReceiveResult(int resultCode, Bundle resultData);
 	}

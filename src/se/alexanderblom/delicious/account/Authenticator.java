@@ -1,5 +1,6 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.account;
 
+import se.alexanderblom.delicious.ui.LoginActivity;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;

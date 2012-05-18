@@ -19,7 +19,7 @@
         android:theme="@style/Theme.Delicious" >
         
          <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Delicious" >
             
@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".AddBookmarkActivity"
+            android:name=".ui.AddBookmarkActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Delicious.AddBookmark" >
 
@@ -45,7 +45,7 @@
         
         <service android:name=".BookmarkService" />
         
-        <service android:name=".AuthenticatorService">
+        <service android:name=".account.AuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -56,7 +56,7 @@
         </service>
         
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:label="@string/activity_login_title"
             android:theme="@style/Theme.Delicious" />
 

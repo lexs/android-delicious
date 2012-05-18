@@ -1,4 +1,4 @@
-package se.alexanderblom.delicious;
+package se.alexanderblom.delicious.ui;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
