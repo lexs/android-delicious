@@ -20,6 +20,7 @@
     <string name="field_url_error">Invalid URL.</string>
     <string name="field_title">Title</string>
     <string name="field_title_fetching">Fetching title…</string>
+    <string name="field_title_fetching_failed">Failed to fetch title</string>
     <string name="field_notes">Notes</string>
     <string name="field_tags">Tags</string>
     <string name="field_tags_hint">Tags, comma separated</string>

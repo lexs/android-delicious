@@ -2,7 +2,7 @@ package se.alexanderblom.delicious;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -17,6 +17,7 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
@@ -24,6 +25,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 
 public class TitleFetcher implements LoaderCallbacks<String> {
 	private static final String TAG = "TitleFetcher";
@@ -32,6 +37,16 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 	
 	private EditText urlView;
 	private EditText titleView;
+	
+	private TextWatcher titleWatcher = new AbstractTextWatcher() {
+		@Override
+		public void afterTextChanged(Editable s) {
+			// If title is changed when we are fetching it, abort
+			activity.getLoaderManager().destroyLoader(0);
+			
+			Log.d(TAG, "Got input, cancelling title fetch");
+		}
+	};
 	
 	public TitleFetcher(Activity activity) {
 		this.activity = activity;
@@ -57,15 +72,7 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 	public Loader<String> onCreateLoader(int id, Bundle args) {
 		titleView.setHint(R.string.field_title_fetching);
 		
-		titleView.addTextChangedListener(new AbstractTextWatcher() {
-			@Override
-			public void afterTextChanged(Editable s) {
-				// If title is changed when we are fetching it, abort
-				activity.getLoaderManager().destroyLoader(0);
-				
-				Log.d(TAG, "Got input, cancelling title fetch");
-			}
-		});
+		titleView.addTextChangedListener(titleWatcher);
 		
 		String url = urlView.getText().toString();
 		return new TitleLoader(activity, url);
@@ -73,17 +80,24 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 
 	@Override
 	public void onLoadFinished(Loader<String> loader, String title) {
-		titleView.setHint(R.string.field_title);
+		// We don't need to watch the title anymore
+		titleView.removeTextChangedListener(titleWatcher);
 		
+		titleView.setHint(R.string.field_title);
 		titleView.setText(title);
 		
 		// Select text so the user can easily change it
 		titleView.selectAll();
+		
+		if (title == null) {
+			Toast.makeText(activity, R.string.field_title_fetching_failed, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<String> loader) {
-		// TODO Auto-generated method stub
+		// We don't need to watch the title anymore
+		titleView.removeTextChangedListener(titleWatcher);
 	}
 	
 	public void maybeFetchTitle() {
@@ -113,17 +127,11 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 		@Override
 		public String loadInBackground() {
 			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			try {
 				HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
 				
 				try {
-					String html = toString(new BufferedInputStream(request.getInputStream()));
+					InputStreamReader reader = new InputStreamReader(new BufferedInputStream(request.getInputStream()), Charsets.UTF_8);
+					String html = CharStreams.toString(reader);
 
 					Matcher m = PATTERN_TITLE.matcher(html);
 					if (m.find()) {
@@ -139,14 +147,6 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 				
 				return null;
 			}
-		}
-		
-		private String toString(InputStream is) {
-		    try {
-		        return new java.util.Scanner(is).useDelimiter("\\A").next();
-		    } catch (java.util.NoSuchElementException e) {
-		        return "";
-		    }
 		}
 	}
 }
