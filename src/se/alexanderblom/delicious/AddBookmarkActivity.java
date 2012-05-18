@@ -30,6 +30,8 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	private MultiAutoCompleteTextView tagsView;
 	private CheckBox privateView;
 	
+	private DeliciousAccount deliciousAccount;
+	
 	private CallbackReceiver receiver;
 	
     @Override
@@ -39,6 +41,8 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
         setContentView(R.layout.activity_add_bookmark);
         
         setTitle(R.string.activity_add_bookmark_title);
+        
+        deliciousAccount = new DeliciousAccount(this);
         
         receiver = new CallbackReceiver(new Handler());
         
@@ -132,7 +136,7 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	}
 	
 	private void checkAccount() {
-		if (!Delicious.hasAccount(this)) {
+		if (!deliciousAccount.exists()) {
 			// Ask user to add an account
 			Intent intent = new Intent(this, LoginActivity.class)
 				.putExtra(LoginActivity.EXTRA_LAUNCH, getIntent());

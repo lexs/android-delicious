@@ -28,6 +28,8 @@ public class MainActivity extends Activity implements ClipboardManager.OnPrimary
 	private View clipboardDisplay;
 	private TextView clipboardLinkView;
 	
+	private DeliciousAccount deliciousAccount;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class MainActivity extends Activity implements ClipboardManager.OnPrimary
 		});
 		
 		clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+		
+		deliciousAccount = new DeliciousAccount(this);
 		
 		checkAccount();
 	}
@@ -156,7 +160,7 @@ public class MainActivity extends Activity implements ClipboardManager.OnPrimary
 	}
 	
 	private void checkAccount() {
-		if (!Delicious.hasAccount(this)) {
+		if (!deliciousAccount.exists()) {
 			// Ask user to add an account
 			Intent intent = new Intent(this, LoginActivity.class)
 			.putExtra(LoginActivity.EXTRA_LAUNCH, new Intent(this, MainActivity.class));

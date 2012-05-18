@@ -84,11 +84,10 @@ public class BookmarkService extends IntentService {
 		}
 		try {
 			HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-			if (!Delicious.addAuth(this, urlConnection)) {
-				return false;
-			}
 			
+			// TODO: Handle exception
+			new DeliciousAccount(this).addAuth(urlConnection);
+
 			try {
 				int response = urlConnection.getResponseCode();
 				

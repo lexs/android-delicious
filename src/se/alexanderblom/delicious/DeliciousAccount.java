@@ -8,40 +8,41 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
-public class Delicious {
-	private static final String TAG = "Delicious";
+public class DeliciousAccount {
+	private static final String TAG = "DeliciousAccount";
 	
-	public static boolean hasAccount(Context context) {
-		AccountManager accountManager = AccountManager.get(context);
+	private AccountManager accountManager;
+	
+	public DeliciousAccount(Context context) {
+		accountManager = AccountManager.get(context.getApplicationContext());
+	}
+	
+	public Account get() {
+		Account accounts[] = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
 		
-		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
-		if (accounts.length == 0) {
-			Log.d(TAG, "No account");
-			
-			return false;
+		if (accounts.length > 0) {
+			return accounts[0];
 		} else {
-			return true;
+			return null;
 		}
 	}
 	
-	public static boolean addAuth(Context context, HttpURLConnection urlConnection) {
-		AccountManager accountManager = AccountManager.get(context);
-		
-		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
-		if (accounts.length == 0) {
+	public boolean exists() {
+		return get() != null;
+	}
+	
+	public void addAuth(HttpURLConnection urlConnection) {
+		Account account = get();
+		if (account == null) {
 			Log.e(TAG, "No account");
 			
-			// TODO: Use exception
-			return false;
+			// TODO: Let application handle this
+			throw new RuntimeException("No account");
 		} else {
-			Account account = accounts[0];
-			
 			String username = account.name;
 			String password = accountManager.getPassword(account);
 			
 			addAuth(urlConnection, username, password);
-			
-			return true;
 		}
 	}
 	

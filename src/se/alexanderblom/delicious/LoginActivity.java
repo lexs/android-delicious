@@ -20,6 +20,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 	private static final String TAG = "LoginActivity";
@@ -30,6 +31,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	
 	private EditText usernameView;
 	private EditText passwordView;
+	
+	private DeliciousAccount deliciousAccount;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,23 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 				handleLogin();
 			}
 		});
+		
+		deliciousAccount = new DeliciousAccount(this);
+		if (deliciousAccount.exists()) {
+			Toast.makeText(this, R.string.toast_account_exists, Toast.LENGTH_SHORT).show();
+			finish();
+		}
+	}
+	
+	@Override
+	public void finish() {
+		super.finish();
+		
+		// Should we start an activity?
+		Intent intent = getIntent().getParcelableExtra(EXTRA_LAUNCH);
+		if (intent != null) {
+			startActivity(intent);
+		}
 	}
 	
 	private void handleLogin() {
@@ -93,12 +113,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		
 		setAccountAuthenticatorResult(result);
 		finish();
-		
-		// Should we start an activity?
-		Intent intent = getIntent().getParcelableExtra(EXTRA_LAUNCH);
-		if (intent != null) {
-			startActivity(intent);
-		}
 	}
 	
 	private class LoginTask extends AsyncTask<Void, Void, Boolean> {
@@ -122,7 +136,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 				URL url = new URL("https://api.del.icio.us/v1/posts/update");
 				
 				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-				Delicious.addAuth(urlConnection, username, password);
+				DeliciousAccount.addAuth(urlConnection, username, password);
 				
 				int response = urlConnection.getResponseCode();
 				
