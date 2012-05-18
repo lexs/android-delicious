@@ -4,4 +4,8 @@
 		android:title="@string/menu_add"
 		android:icon="@drawable/ic_action_add"
 		android:showAsAction="always" />
+    
+    <item android:id="@+id/menu_logout"
+		android:title="@string/menu_logout"
+		android:showAsAction="never" />
 </menu>

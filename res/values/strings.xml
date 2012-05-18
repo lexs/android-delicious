@@ -6,6 +6,7 @@
     
     <!-- MainActivity -->
     <string name="menu_add">Add link</string>
+    <string name="menu_logout">Logout</string>
     
     <string name="clipboard_text">Save copied link?</string>
     <string name="clipboard_button">Save</string>

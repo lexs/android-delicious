@@ -1,5 +1,9 @@
 package se.alexanderblom.delicious;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -76,6 +80,9 @@ public class MainActivity extends Activity implements ClipboardManager.OnPrimary
 			case R.id.menu_add:
 				startActivity(new Intent(this, AddBookmarkActivity.class));
 				break;
+			case R.id.menu_logout:
+				logout();
+				break;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -88,6 +95,33 @@ public class MainActivity extends Activity implements ClipboardManager.OnPrimary
 		Log.d(TAG, "Clipboard changed");
 		
 		checkClipboard();
+	}
+	
+	private void logout() {
+		Log.d(TAG, "Removing account");
+		
+		AccountManager accountManager = AccountManager.get(this);
+		Account accounts[] = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
+		Account account = accounts[0];
+		
+		// Callback to wait for the account to actually be removed
+		AccountManagerCallback<Boolean> callback = new AccountManagerCallback<Boolean>() {
+			@Override
+			public void run(AccountManagerFuture<Boolean> future) {
+				try {
+					if (future.getResult()) {
+						checkAccount();
+					} else {
+						// Could not remove account, should not happen
+						Log.e(TAG, "Could not remove account");
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Error fetching remove account result", e);
+				}
+			}
+		};
+		
+		accountManager.removeAccount(account, callback, null);
 	}
 	
 	private void checkClipboard() {
@@ -125,8 +159,8 @@ public class MainActivity extends Activity implements ClipboardManager.OnPrimary
 		if (!Delicious.hasAccount(this)) {
 			// Ask user to add an account
 			Intent intent = new Intent(this, LoginActivity.class)
-				.putExtra(LoginActivity.EXTRA_LAUNCH, new Intent(this, MainActivity.class));
-			
+			.putExtra(LoginActivity.EXTRA_LAUNCH, new Intent(this, MainActivity.class));
+		
 			startActivity(intent);
 			finish();
 		}
