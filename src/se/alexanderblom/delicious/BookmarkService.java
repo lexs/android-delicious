@@ -2,7 +2,6 @@ package se.alexanderblom.delicious;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.app.IntentService;
@@ -74,22 +73,16 @@ public class BookmarkService extends IntentService {
 				.appendQueryParameter("shared", shared ? "yes" : "no")
 				.build()
 				.toString();
-
-		URL url = null;
+		
+		
 		try {
-			url = new URL(uri);
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+			HttpURLConnection request = (HttpURLConnection) new URL(uri).openConnection();
 			
 			// TODO: Handle exception
-			new DeliciousAccount(this).addAuth(urlConnection);
-
+			new DeliciousAccount(this).addAuth(request);
+			
 			try {
-				int response = urlConnection.getResponseCode();
+				int response = request.getResponseCode();
 				
 				if (response == 200) {
 					return true;
@@ -105,7 +98,7 @@ public class BookmarkService extends IntentService {
 					return false;
 				}
 			} finally {
-				urlConnection.disconnect();
+				request.disconnect();
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "Error saving bookmark", e);

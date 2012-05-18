@@ -2,7 +2,6 @@ package se.alexanderblom.delicious;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.accounts.Account;
@@ -138,35 +137,33 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			try {
-				URL url = new URL("https://api.del.icio.us/v1/posts/update");
+				HttpURLConnection request = (HttpURLConnection) new URL("https://api.del.icio.us/v1/posts/update").openConnection();
+				DeliciousAccount.addAuth(request, username, password);
 				
-				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-				DeliciousAccount.addAuth(urlConnection, username, password);
-				
-				int response = urlConnection.getResponseCode();
-				
-				if (response == 200) {
-					return true;
-				} else if (response == 401) {
-					// Unauthorized
-					Log.e(TAG, "401 Unauthorized");
+				try {
+					int response = request.getResponseCode();
 					
-					return false;
-				} else {
-					// Unknown response
-					Log.e(TAG, "Unknown response code: " + response);
-					
-					return false;
+					if (response == 200) {
+						return true;
+					} else if (response == 401) {
+						// Unauthorized
+						Log.e(TAG, "401 Unauthorized");
+						
+						return false;
+					} else {
+						// Unknown response
+						Log.e(TAG, "Unknown response code: " + response);
+						
+						return false;
+					}
+				} finally {
+					request.disconnect();
 				}
-			} catch (MalformedURLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(TAG, "Login failed", e);
+				
+				return false;
 			}
-			
-			return false;
 		}
 
 		@Override
