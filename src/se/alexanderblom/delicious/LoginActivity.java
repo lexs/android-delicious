@@ -35,7 +35,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_add_account);
+		setContentView(R.layout.activity_login);
 		
 		usernameView = (EditText) findViewById(R.id.username);
 		passwordView = (EditText) findViewById(R.id.password);
