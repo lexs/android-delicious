@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:paddingLeft="0dip"
+	    android:paddingRight="0dip" >
+	
+	    <TextView style="@style/sectionHeader"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/field_username" />
+	
+	    <EditText style="@style/editor"
+	        android:id="@+id/username"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:lines="1"
+	        android:inputType="text"
+	        android:hint="@string/field_username" />
+	
+	    <TextView style="@style/sectionHeader"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/field_password" />
+	
+	    <EditText style="@style/editor"
+	        android:id="@+id/password"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:lines="1"
+	        android:inputType="textPassword"
+	        android:hint="@string/field_password" />
+	    
+	    <Button android:id="@+id/login"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="4dip"
+	        android:layout_marginRight="4dip"
+	        android:text="@string/button_login" />
+	
+	</LinearLayout>
+	
+</ScrollView>

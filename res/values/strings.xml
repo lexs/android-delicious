@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Delicious</string>
+    
+    <string name="field_empty_error">%s can\'t be empty.</string>
+    
+    <!-- MainActivity -->
+    <string name="menu_add">Add link</string>
+    
+    <string name="clipboard_text">Save copied link?</string>
+    <string name="clipboard_button">Save</string>
+    
+    <!-- AddBookmarkActivity -->
+    <string name="activity_add_bookmark_title">Save link</string>
+    <string name="menu_cancel">Cancel</string>
+    <string name="menu_save">Save</string>
+    
+    <string name="field_url">URL</string>
+    <string name="field_url_error">Invalid URL.</string>
+    <string name="field_title">Title</string>
+    <string name="field_notes">Notes</string>
+    <string name="field_tags">Tags</string>
+    <string name="field_tags_hint">Tags, comma separated</string>
+    <string name="field_mark_private">Mark as private</string>
+    
+    <string name="toast_bookmark_invalid">Invalid input</string>
+    <string name="dialog_saving_message">Saving…</string>
+    
+    <!-- LoginActivity -->
+    <string name="activity_login_title">Sign in</string>
+    <string name="dialog_logging_in">Logging in…</string>
+    <string name="field_username">Username</string>
+    <string name="field_password">Password</string>
+    <string name="button_login">Login</string>
+    
+    <!-- BookmarkService -->
+    <string name="toast_bookmark_saved">Link saved to Delicious</string>
+    <string name="toast_bookmark_saved_failed">Failed to save link, please try again</string>
+
+</resources>

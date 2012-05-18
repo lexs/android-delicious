@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="editor_min_line_item_height">48dip</dimen>
+    <dimen name="editor_field_left_padding">4dip</dimen>
+</resources>

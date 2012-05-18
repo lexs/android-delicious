@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="Widget.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+		<item name="android:displayOptions">showTitle|showHome</item>
+		<item name="android:background">@color/emphasis</item>
+	</style>
+	
+	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">
+	    <item name="android:displayOptions">showTitle|showHome|homeAsUp</item>
+		<item name="android:title">@string/activity_add_bookmark_title</item>
+	</style>
+
+	<style name="Theme.Delicious" parent="android:Theme.Holo.Light.DarkActionBar">
+		<item name="android:actionBarStyle">@style/Widget.ActionBar</item>
+	</style>
+	
+	<style name="Theme.Delicious.AddBookmark" parent="Theme.Delicious">
+	    <item name="android:title">@string/activity_add_bookmark_title</item>
+		<item name="android:actionBarStyle">@style/Widget.ActionBar.AddBookmark</item>
+	</style>
+	
+	<style name="sectionHeader" parent="android:Widget.Holo.Light.TextView">
+        <item name="android:drawableBottom">@drawable/section_header</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">@color/emphasis</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+    
+	<style name="editor" parent="android:Widget.Holo.Light.EditText">
+	    <item name="android:minHeight">@dimen/editor_min_line_item_height</item>
+	    <item name="android:layout_gravity">center_vertical</item>
+	    <item name="android:layout_marginLeft">@dimen/editor_field_left_padding</item>
+	    <item name="android:layout_marginRight">4dip</item>
+	    <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+	</style>
+	
+	 <!-- TextView style with blue underline. It is most suitable for headers.
+
+         This is similar to ?android:attr/listSeparatorTextView but uses different
+         background and text color. See also android:style/Widget.Holo.TextView.ListSeparator
+         (which is private, so we cannot specify it as a parent style).  -->
+    <!-- <style name="ContactListSeparatorTextViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/list_section_divider_min_height</item>
+        <item name="android:background">@drawable/list_section_divider_holo_custom</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/people_app_theme_color</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">8dip</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">true</item>
+    </style> -->
+</resources>

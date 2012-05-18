@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="0dip"
+    android:paddingRight="0dip">
+    
+    <View android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:layout_weight="1" />
+    
+    <RelativeLayout android:id="@+id/clipboard_display"
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="12dp"
+    	android:paddingRight="12dp"
+    	android:paddingTop="16dp"
+    	android:paddingBottom="16dp"
+    	android:background="#fae599"
+    	android:visibility="gone">
+        
+        <TextView android:id="@+id/clipboard_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_toLeftOf="@+id/clipboard_save_button"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textStyle="bold"
+	        android:text="@string/clipboard_text" />
+        
+        <TextView android:id="@+id/clipboard_link"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/clipboard_info"
+	        android:layout_toLeftOf="@+id/clipboard_save_button"
+	        android:singleLine="true"
+	        android:ellipsize="end" />
+        
+        <Button android:id="@+id/clipboard_save_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:text="@string/clipboard_button" />
+        
+    </RelativeLayout>
+</LinearLayout>

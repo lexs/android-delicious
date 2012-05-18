@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:paddingLeft="0dip"
+	    android:paddingRight="0dip" >
+	
+	    <TextView style="@style/sectionHeader"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/field_url" />
+	
+	    <EditText style="@style/editor"
+	        android:id="@+id/url"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:lines="1"
+	        android:inputType="textUri"
+	        android:hint="@string/field_url" />
+	
+	    <TextView style="@style/sectionHeader"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/field_title" />
+	
+	    <EditText style="@style/editor"
+	        android:id="@+id/title"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:lines="1"
+	        android:inputType="text|textCapSentences"
+	        android:hint="@string/field_title" />
+	    
+	    <TextView style="@style/sectionHeader"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/field_notes" />
+	
+	    <EditText style="@style/editor"
+	        android:id="@+id/notes"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:maxLines="2"
+	        android:inputType="text|textMultiLine"
+	        android:hint="@string/field_notes" />
+	    
+	    <TextView style="@style/sectionHeader"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/field_tags" />
+	
+	    <MultiAutoCompleteTextView style="@style/editor"
+	        android:id="@+id/tags"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:lines="1"
+	        android:inputType="text|textNoSuggestions"
+	        android:imeOptions="actionDone"
+	        android:hint="@string/field_tags_hint" />
+	    
+	    <CheckBox android:id="@+id/mark_private"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="4dip"
+	        android:layout_marginRight="4dip"
+	        android:text="@string/field_mark_private" />
+	
+	</LinearLayout>
+	
+	</ScrollView>
