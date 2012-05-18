@@ -128,7 +128,7 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 				startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
 				finish();
 			case R.id.menu_cancel:
-				cancel();
+				finish();
 				break;
 			case R.id.menu_save:
 				saveBookmark();
@@ -151,12 +151,6 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 		}
 	}
 
-	private void cancel() {
-		// TODO: Add dialog if user has entered data
-		
-		finish();
-	}
-	
 	private boolean isValidBookmark() {
 		boolean valid = true;
 		
@@ -218,6 +212,7 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		if (resultCode == BookmarkService.RESULT_SUCCESSFULL) {
+			// Bookmark was successfully saved, we can safely exit
 			finish();
 		} else {
 			ProgressDialogFragment dialog = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(DIALOG_TAG);
