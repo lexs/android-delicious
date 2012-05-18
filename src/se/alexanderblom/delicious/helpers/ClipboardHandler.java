@@ -89,7 +89,7 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 		clipboardDisplay.setVisibility(View.VISIBLE);
 		clipboardLinkView.setText(url);
 		
-		// Hide link in after a while
+		// Hide link after a while
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
