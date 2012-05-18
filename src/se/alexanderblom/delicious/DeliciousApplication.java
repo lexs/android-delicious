@@ -9,6 +9,8 @@ public class DeliciousApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		System.setProperty("http.agent", Constants.HTTP_AGENT);
 
 		int errorDimen = getResources().getDimensionPixelSize(R.dimen.ic_editext_error_dimen);
 
