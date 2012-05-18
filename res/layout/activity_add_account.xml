@@ -34,6 +34,7 @@
 	        android:layout_height="wrap_content"
 	        android:lines="1"
 	        android:inputType="textPassword"
+	        android:imeOptions="actionDone"
 	        android:hint="@string/field_password" />
 	    
 	    <Button android:id="@+id/login"

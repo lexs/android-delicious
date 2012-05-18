@@ -13,9 +13,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 	private static final String TAG = "LoginActivity";
@@ -35,6 +39,20 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		
 		usernameView = (EditText) findViewById(R.id.username);
 		passwordView = (EditText) findViewById(R.id.password);
+		
+		// Enable user to press enter when done
+		passwordView.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					handleLogin();
+					
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
 		
 		View loginButton = findViewById(R.id.login);
 		loginButton.setOnClickListener(new OnClickListener() {
