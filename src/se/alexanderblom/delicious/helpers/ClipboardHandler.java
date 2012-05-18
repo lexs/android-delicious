@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -17,16 +18,22 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 	private static final String TAG = "ClipboardHandler";
 	
 	private static final String MIMETYPE_TEXT_PLAIN = "text/plain";
+	private static final int LINK_TIMEOUT = 10 * 1000; // 10 seconds
 	
 	private Activity activity;
+	private Handler handler;
 	
 	private ClipboardManager clipboard;
 	
 	private View clipboardDisplay;
 	private TextView clipboardLinkView;
 	
+	private String url;
+	
 	public ClipboardHandler(Activity activity) {
 		this.activity = activity;
+		
+		handler = new Handler();
 		
 		clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
 		
@@ -60,13 +67,16 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 	}
 	
 	private void checkClipboard() {
+		// Check that the clip is plain text
 		if (clipboard.hasPrimaryClip() && clipboard.getPrimaryClipDescription().hasMimeType(MIMETYPE_TEXT_PLAIN)) {
 			ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
 			CharSequence text = item.getText();
 			
-			// Check if it's a web url
-			if (Patterns.WEB_URL.matcher(text).find()) {
-				Log.d(TAG, "Web url found: " + text);
+			// Check if it's a web url and that we have not previously seen it
+			if (Patterns.WEB_URL.matcher(text).find() && !text.equals(url)) {
+				Log.d(TAG, "New web url found: " + text);
+				
+				url = text.toString();
 				
 				displayClipboard(text);
 			}
@@ -77,13 +87,19 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 	
 	private void displayClipboard(CharSequence url) {
 		clipboardDisplay.setVisibility(View.VISIBLE);
-		
 		clipboardLinkView.setText(url);
+		
+		// Hide link in after a while
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				clipboardDisplay.setVisibility(View.GONE);
+			}
+		}, LINK_TIMEOUT);
+		
 	}
 	
 	private void saveClipboardLink() {
-		CharSequence url = clipboardLinkView.getText();
-		
 		Intent intent = new Intent(Intent.ACTION_SEND, null, activity, AddBookmarkActivity.class)
 			.putExtra(Intent.EXTRA_TEXT, url);
 		
