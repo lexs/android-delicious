@@ -32,8 +32,9 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	private CheckBox privateView;
 	
 	private DeliciousAccount deliciousAccount;
-	
 	private CallbackReceiver receiver;
+	
+	private TitleFetcher titleFetcher;
 	
 	private Drawable errorDrawable;
 	
@@ -47,6 +48,7 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
         
         errorDrawable = DeliciousApplication.getErrorDrawable();
         
+        titleFetcher = new TitleFetcher(this);
         deliciousAccount = new DeliciousAccount(this);
         
         receiver = new CallbackReceiver(new Handler());
@@ -94,6 +96,9 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
                 tagsView.requestFocus();
         	}
         }
+        
+        // Fetch title if necessary
+        titleFetcher.maybeFetchTitle();
         
         checkAccount();
     }
@@ -178,8 +183,6 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	
 	private void saveBookmark() {
 		if (!isValidBookmark()) {
-			//Toast.makeText(this, R.string.toast_bookmark_invalid, Toast.LENGTH_SHORT).show();
-			
 			return;
 		}
 		
