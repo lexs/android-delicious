@@ -9,8 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import se.alexanderblom.delicious.R;
-import se.alexanderblom.delicious.R.id;
-import se.alexanderblom.delicious.R.string;
 import se.alexanderblom.delicious.util.AbstractTextWatcher;
 import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.Activity;
@@ -106,12 +104,8 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 	public void maybeFetchTitle() {
 		if (TextUtils.isEmpty(titleView.getText().toString())
 				&& Patterns.WEB_URL.matcher(urlView.getText().toString()).find()) {
-			fetchTitle();
+			activity.getLoaderManager().restartLoader(0, null, this);
 		}
-	}
-	
-	private void fetchTitle() {
-		activity.getLoaderManager().restartLoader(0, null, this);
 	}
 	
 	private static class TitleLoader extends AsyncLoader<String> {
