@@ -5,7 +5,7 @@ import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.DeliciousApplication;
 import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.helpers.TitleFetcher;
-import se.alexanderblom.delicious.util.CallbackReceiver;
+import se.alexanderblom.delicious.util.DetachableResultReceiver;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -28,7 +28,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class AddBookmarkActivity extends Activity implements CallbackReceiver.Callback {
+public class AddBookmarkActivity extends Activity implements DetachableResultReceiver.Receiver {
 	private static final String DIALOG_TAG = "saving_link";
 	
 	private EditText urlView;
@@ -38,7 +38,7 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
 	private CheckBox privateView;
 	
 	private DeliciousAccount deliciousAccount;
-	private CallbackReceiver receiver;
+	private DetachableResultReceiver receiver;
 	
 	private TitleFetcher titleFetcher;
 	
@@ -57,7 +57,7 @@ public class AddBookmarkActivity extends Activity implements CallbackReceiver.Ca
         titleFetcher = new TitleFetcher(this);
         deliciousAccount = new DeliciousAccount(this);
         
-        receiver = new CallbackReceiver(new Handler());
+        receiver = new DetachableResultReceiver(new Handler());
         
         urlView = (EditText) findViewById(R.id.url);
         titleView = (EditText) findViewById(R.id.title);
