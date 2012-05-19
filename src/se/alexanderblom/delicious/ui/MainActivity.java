@@ -1,27 +1,43 @@
 package se.alexanderblom.delicious.ui;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
 import se.alexanderblom.delicious.Constants;
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.adapter.PostsAdapter;
 import se.alexanderblom.delicious.helpers.ClipboardHandler;
+import se.alexanderblom.delicious.model.Post;
+import se.alexanderblom.delicious.model.PostsParser;
+import se.alexanderblom.delicious.util.AsyncLoader;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.app.Activity;
+import android.app.ListActivity;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity implements LoaderCallbacks<List<Post>> {
 	private static final String TAG = "MainActivity";
 	
 	private ClipboardHandler clipboarHandler;
 	
 	private DeliciousAccount deliciousAccount;
+	
+	private PostsAdapter adapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +48,12 @@ public class MainActivity extends Activity {
 		clipboarHandler = new ClipboardHandler(this);
 		deliciousAccount = new DeliciousAccount(this);
 		
+		adapter = new PostsAdapter(this);
+		setListAdapter(adapter);
+		
 		checkAccount();
+		
+		getLoaderManager().initLoader(0, null, this);
 	}
 	
 	@Override
@@ -72,6 +93,21 @@ public class MainActivity extends Activity {
 		
 		return true;
 	}
+	
+	@Override
+	public Loader<List<Post>> onCreateLoader(int id, Bundle args) {
+		return new RecentsLoader(this, deliciousAccount);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<List<Post>> loader, List<Post> posts) {
+		adapter.addAll(posts);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<List<Post>> loader) {
+		adapter.clear();
+	}
 
 	private void logout() {
 		Log.d(TAG, "Removing account");
@@ -108,6 +144,36 @@ public class MainActivity extends Activity {
 		
 			startActivity(intent);
 			finish();
+		}
+	}
+
+	private static class RecentsLoader extends AsyncLoader<List<Post>> {
+		private DeliciousAccount account;
+		
+		public RecentsLoader(Context context, DeliciousAccount account) {
+			super(context);
+			
+			this.account = account;
+		}
+
+		@Override
+		public List<Post> loadInBackground() {
+			try {
+				HttpURLConnection request = (HttpURLConnection) new URL("https://api.del.icio.us/v1/json/posts/recent").openConnection();
+				account.addAuth(request);
+				
+				try {
+					InputStream is = request.getInputStream();
+					
+					return new PostsParser(new BufferedInputStream(is)).getPosts();
+				} finally {
+					request.disconnect();
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "Failed to fetch recent", e);
+				
+				return null;
+			}
 		}
 	}
 }
