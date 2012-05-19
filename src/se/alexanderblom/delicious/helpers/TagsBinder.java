@@ -14,7 +14,9 @@ public class TagsBinder {
 	private static final float SATURATION = 0.7f;
 	private static final float LIGHTNESS = 0.9f;
 	
-	private static final HashFunction HASH_FUNCTION = Hashing.goodFastHash(Integer.SIZE);
+	// This gives nice looking colors and is consistent
+	private static final int HASH_SEED = 1337;
+	private static final HashFunction HASH_FUNCTION = Hashing.murmur3_32(HASH_SEED);
 	
 	public void bind(TextView v, List<String> tags) {
 		CharSequence tagList = buildTagList(tags);
