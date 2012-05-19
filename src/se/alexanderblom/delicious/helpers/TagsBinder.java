@@ -6,9 +6,15 @@ import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.widget.TextView;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+
 public class TagsBinder {
 	private static final float SATURATION = 0.7f;
 	private static final float LIGHTNESS = 0.9f;
+	
+	private static final HashFunction HASH_FUNCTION = Hashing.goodFastHash(32);
 	
 	public void bind(TextView v, List<String> tags) {
 		CharSequence tagList = buildTagList(tags);
@@ -36,17 +42,21 @@ public class TagsBinder {
 	}
 	
 	private int generateColor(String text) {
-		float old = text.hashCode();
-		float old_min = Integer.MIN_VALUE;
-		float old_max = Integer.MAX_VALUE;
-		float hue = ((old - old_min) / (old_max - old_min)) * (1f - 0f);
-		
-		hue = Math.max(0f, Math.min(hue, 1f));
-		
-		//return Color.HSVToColor(new float[] { hue, SATURATION, LIGHTNESS });
+		float hue = calculateHue(text);
 		return HSBtoColor(hue, SATURATION, LIGHTNESS);
 	}
 	
+	private float calculateHue(String text) {
+		int hash = HASH_FUNCTION.hashString(text, Charsets.UTF_8).asInt();
+		
+		float old_min = Integer.MIN_VALUE;
+		float old_max = Integer.MAX_VALUE;
+		float hue = ((hash - old_min) / (old_max - old_min)) * (1f - 0f);
+		
+		// Return limited in range (1f, 0f)
+		return Math.max(0f, Math.min(hue, 1f));
+	}
+
 	/**
 	 * Adapted from Color.java in Android
 	 * 
@@ -104,30 +114,4 @@ public class TagsBinder {
 		return 0xFF000000 | (((int) (red * 255.0f)) << 16)
 				| (((int) (green * 255.0f)) << 8) | ((int) (blue * 255.0f));
 	}
-/*
-	private int HSLToRGB(float h, float s, float l) {
-		 float c = (1 - Math.abs(2.f * l - 1.f)) * s;
-		 float h_ = h / 60.f;
-		 float h_mod2 = h_;
-		 if (h_mod2 >= 4.f) h_mod2 -= 4.f;
-		 else if (h_mod2 >= 2.f) h_mod2 -= 2.f;
-		 
-		 float x = c * (1 - Math.abs(h_mod2 - 1));
-		 float r_, g_, b_;
-		 if (h_ < 1)      { r_ = c; g_ = x; b_ = 0; }
-		 else if (h_ < 2) { r_ = x; g_ = c; b_ = 0; }
-		 else if (h_ < 3) { r_ = 0; g_ = c; b_ = x; }
-		 else if (h_ < 4) { r_ = 0; g_ = x; b_ = c; }
-		 else if (h_ < 5) { r_ = x; g_ = 0; b_ = c; }
-		 else             { r_ = c; g_ = 0; b_ = x; }
-		 
-		 float m = l - (0.5f * c); 
-		 int r = (int)((r_ + m) * (255.f) + 0.5f);
-		 int g = (int)((g_ + m) * (255.f) + 0.5f);
-		 int b = (int)((b_ + m) * (255.f) + 0.5f);
-		 int rgb = r << 16 | g << 8 | b;
-		 
-		 return rgb | 0xff000000; // ensure alpha 1
-	}
-*/
 }
