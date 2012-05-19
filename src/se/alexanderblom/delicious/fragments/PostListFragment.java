@@ -15,7 +15,9 @@ import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,6 +42,10 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+		Post post = adapter.getItem(position);
+		
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLink()));
+		startActivity(intent);
 	}
 
 	@Override
