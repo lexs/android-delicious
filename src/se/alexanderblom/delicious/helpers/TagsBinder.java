@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
-import android.util.Log;
 import android.widget.TextView;
 
 public class TagsBinder {
@@ -12,28 +11,13 @@ public class TagsBinder {
 	private static final float LIGHTNESS = 0.9f;
 	
 	public void bind(TextView v, List<String> tags) {
-		SpannableStringBuilder builder = createStringBuilder(v);
-		CharSequence tagList = buildTagList(tags, builder);
-		
+		CharSequence tagList = buildTagList(tags);
 		v.setText(tagList, TextView.BufferType.SPANNABLE);
 	}
-	
-	private SpannableStringBuilder createStringBuilder(TextView v) {
-		CharSequence text = v.getText();
+
+	private CharSequence buildTagList(List<String> tags) {
+		SpannableStringBuilder builder = new SpannableStringBuilder();
 		
-		if (text != null && text instanceof SpannableStringBuilder) {
-			Log.d("Hej", "reusing builder");
-			
-			SpannableStringBuilder builder = (SpannableStringBuilder) text;
-			builder.clear();
-			
-			return builder;
-		} else {
-			return new SpannableStringBuilder();
-		}
-	}
-	
-	private CharSequence buildTagList(List<String> tags, SpannableStringBuilder builder) {
 		for (String tag : tags) {
 			int pos = builder.length();
 			
