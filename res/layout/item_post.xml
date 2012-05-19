@@ -13,15 +13,17 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="end"
-        android:textAppearance="?android:attr/textAppearanceMedium"  />
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"  />
    
     
     <TextView android:id="@+id/url"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/title"
+        android:paddingBottom="2dip"
         android:singleLine="true"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:textColor="?android:attr/textColorTertiary" />
     
     <TextView android:id="@+id/time"
         android:layout_width="wrap_content"
@@ -36,7 +38,6 @@
         android:layout_below="@id/url"
         android:layout_toLeftOf="@id/time"
         android:paddingRight="8dip"
-        android:paddingTop="2dip"
         android:lineSpacingExtra="1dp"
         android:singleLine="true"
         android:ellipsize="none"
