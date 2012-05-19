@@ -18,7 +18,7 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 	private static final String TAG = "ClipboardHandler";
 	
 	private static final String MIMETYPE_TEXT_PLAIN = "text/plain";
-	private static final int LINK_TIMEOUT = 10 * 1000; // 10 seconds
+	private static final int LINK_TIMEOUT = 6 * 1000; // 6 seconds
 	
 	private Activity activity;
 	private Handler handler;
@@ -81,24 +81,68 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 				displayClipboard(text);
 			}
 		} else {
-			clipboardDisplay.setVisibility(View.GONE);
+			hideClipboard();
 		}
 	}
 	
 	private void displayClipboard(CharSequence url) {
-		clipboardDisplay.setVisibility(View.VISIBLE);
 		clipboardLinkView.setText(url);
+		showClipboard();
 		
 		// Hide link after a while
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				clipboardDisplay.setVisibility(View.GONE);
+				hideClipboard();
 			}
 		}, LINK_TIMEOUT);
-		
 	}
 	
+	private void showClipboard() {
+		clipboardDisplay.setVisibility(View.VISIBLE);
+	}
+	
+	private void hideClipboard() {
+		clipboardDisplay.setVisibility(View.GONE);
+	}
+/*
+	private void showClipboard() {
+		// Animate transition
+		final ViewGroup parent = (ViewGroup) clipboardDisplay.getParent();
+		parent.startViewTransition(clipboardDisplay);
+		parent.removeView(clipboardDisplay);
+		
+		clipboardDisplay.setAlpha(0f);
+		clipboardDisplay.setVisibility(View.VISIBLE);
+		clipboardDisplay.animate()
+			.alpha(1f)
+			.setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					parent.endViewTransition(clipboardDisplay);
+					parent.addView(clipboardDisplay);
+				}
+			});
+	}
+	
+	private void hideClipboard() {
+		// Animate transition
+		final ViewGroup parent = (ViewGroup) clipboardDisplay.getParent();
+		parent.startViewTransition(clipboardDisplay);
+		parent.removeView(clipboardDisplay);
+		
+		clipboardDisplay.animate()
+			.alpha(0f)
+			.setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					clipboardDisplay.setVisibility(View.GONE);
+					parent.endViewTransition(clipboardDisplay);
+					parent.addView(clipboardDisplay);
+				}
+			});
+	}
+*/
 	private void saveClipboardLink() {
 		Intent intent = new Intent(Intent.ACTION_SEND, null, activity, AddBookmarkActivity.class)
 			.putExtra(Intent.EXTRA_TEXT, url);

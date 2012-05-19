@@ -8,6 +8,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity";
@@ -30,6 +34,19 @@ public class MainActivity extends Activity {
 		
 		clipboarHandler = new ClipboardHandler(this);
 		deliciousAccount = new DeliciousAccount(this);
+		
+		ViewGroup container = (ViewGroup) findViewById(R.id.container);
+		LayoutTransition transition = new LayoutTransition();
+
+		transition.setStartDelay(LayoutTransition.APPEARING, 0);
+		transition.setStartDelay(LayoutTransition.CHANGE_APPEARING, 0);
+		transition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, 0);
+		transition.setStartDelay(LayoutTransition.DISAPPEARING, 0);
+		
+		ObjectAnimator animator = ObjectAnimator.ofFloat(null, View.ALPHA, 1f, 0f);
+		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
+		
+		container.setLayoutTransition(transition);
 		
 		checkAccount();
 	}
