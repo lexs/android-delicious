@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.List;
 
 import se.alexanderblom.delicious.DeliciousAccount;
+import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.adapter.PostsAdapter;
 import se.alexanderblom.delicious.model.Post;
 import se.alexanderblom.delicious.model.PostsParser;
@@ -20,10 +21,15 @@ import android.content.Loader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 public class PostListFragment extends ListFragment implements LoaderCallbacks<List<Post>> {
+	private static final String TAG = "PostListFragment";
+	
 	private static final String RECENTS_URL = "https://api.del.icio.us/v1/json/posts/recent";
 	
 	private DeliciousAccount deliciousAccount;
@@ -37,7 +43,28 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 		deliciousAccount = new DeliciousAccount(getActivity());
 		adapter = new PostsAdapter(getActivity());
 		
+		setHasOptionsMenu(true);
+		
 		getLoaderManager().initLoader(0, null, this);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		
+		inflater.inflate(R.menu.menu_post_list, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_refresh) {
+			Log.d(TAG, "Refreshing posts");
+			getLoaderManager().restartLoader(0, null, this);
+			
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
@@ -55,6 +82,7 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 
 	@Override
 	public void onLoadFinished(Loader<List<Post>> loader, List<Post> posts) {
+		adapter.clear();
 		adapter.addAll(posts);
 		setListAdapter(adapter);
 	}

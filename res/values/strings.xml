@@ -38,6 +38,9 @@
     
     <string name="toast_account_exists">Only one account is supported</string>
     
+    <!-- PostListFragment -->
+    <string name="menu_refresh">Refresh</string>
+    
     <!-- BookmarkService -->
     <string name="toast_bookmark_saved">Link saved to Delicious</string>
     <string name="toast_bookmark_saved_failed">Failed to save link, please try again</string>
