@@ -44,19 +44,19 @@ public class TagsBinder {
 	}
 	
 	private int generateColor(String text) {
-		float hue = calculateHue(text);
+		float hue = floatFromText(text, 0f, 1f);
 		return HSBtoColor(hue, SATURATION, LIGHTNESS);
 	}
-	
-	private float calculateHue(String text) {
+
+	private float floatFromText(String text, float low, float high) {
 		int hash = HASH_FUNCTION.hashString(text, Charsets.UTF_8).asInt();
 		
-		float old_min = Integer.MIN_VALUE;
-		float old_max = Integer.MAX_VALUE;
-		float hue = ((hash - old_min) / (old_max - old_min)) * (1f - 0f);
+		final float old_min = Integer.MIN_VALUE;
+		final float old_max = Integer.MAX_VALUE;
+		float hue = ((hash - old_min) / (old_max - old_min)) * (high - low);
 		
-		// Return limited in range (1f, 0f)
-		return Math.max(0f, Math.min(hue, 1f));
+		// Return limited in range (low, high)
+		return Math.max(low, Math.min(hue, high));
 	}
 
 	/**
