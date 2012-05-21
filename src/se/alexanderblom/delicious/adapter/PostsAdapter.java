@@ -1,7 +1,6 @@
 package se.alexanderblom.delicious.adapter;
 
 import se.alexanderblom.delicious.R;
-import se.alexanderblom.delicious.helpers.TagsBinder;
 import se.alexanderblom.delicious.model.Post;
 import android.content.Context;
 import android.text.format.DateUtils;
@@ -15,13 +14,11 @@ public class PostsAdapter extends ArrayAdapter<Post> {
 	private static final int RESOURCE = R.layout.item_post;
 	
 	private LayoutInflater inflater;
-	private TagsBinder tagsBinder;
 	
 	public PostsAdapter(Context context) {
 		super(context, 0);
 		
 		inflater = LayoutInflater.from(context);
-		tagsBinder = new TagsBinder();
 	}
 
 	@Override
@@ -39,7 +36,7 @@ public class PostsAdapter extends ArrayAdapter<Post> {
 		titleView.setText(post.getTitle());
 		timeView.setText(DateUtils.getRelativeTimeSpanString(post.getTime()));
 		urlView.setText(post.getLink());
-		tagsBinder.bind(tagsView, post.getTags());
+		tagsView.setText(post.getStyledTags(), TextView.BufferType.SPANNABLE);
 		
 		return v;
 	}

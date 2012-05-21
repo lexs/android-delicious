@@ -2,9 +2,9 @@ package se.alexanderblom.delicious.helpers;
 
 import java.util.List;
 
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
-import android.widget.TextView;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashFunction;
@@ -20,13 +20,8 @@ public class TagsBinder {
 	// This gives nice looking colors and is consistent
 	private static final int HASH_SEED = 1337;
 	private static final HashFunction HASH_FUNCTION = Hashing.murmur3_32(HASH_SEED);
-	
-	public void bind(TextView v, List<String> tags) {
-		CharSequence tagList = buildTagList(tags);
-		v.setText(tagList, TextView.BufferType.SPANNABLE);
-	}
 
-	private SpannableStringBuilder buildTagList(List<String> tags) {
+	public static Spannable buildTagList(List<String> tags) {
 		SpannableStringBuilder builder = new SpannableStringBuilder();
 		
 		for (String tag : tags) {
@@ -49,12 +44,12 @@ public class TagsBinder {
 		return builder;
 	}
 
-	private int generateColor(String text) {
+	private static int generateColor(String text) {
 		float hue = floatFromText(text, 0f, 1f);
 		return HSBtoColor(hue, SATURATION, LIGHTNESS);
 	}
 
-	private float floatFromText(String text, float low, float high) {
+	private static float floatFromText(String text, float low, float high) {
 		int hash = HASH_FUNCTION.hashString(text, Charsets.UTF_8).asInt();
 		
 		final float old_min = Integer.MIN_VALUE;
