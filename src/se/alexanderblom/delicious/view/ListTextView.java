@@ -108,9 +108,13 @@ public class ListTextView extends TextView {
 
 	private boolean tooLong(CharSequence text) {
 		TextPaint paint = getPaint();
-		int width = getWidth();
+		float width = availableWidth();
 		
 		return measure(paint, text) > width;
+	}
+	
+	private int availableWidth() {
+		return getWidth() - getPaddingLeft() - getPaddingRight();
 	}
 	
 	private int measure(TextPaint p, CharSequence text) {
