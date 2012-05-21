@@ -39,6 +39,7 @@
     <string name="button_login">Login</string>
     
     <string name="toast_account_exists">Only one account is supported</string>
+    <string name="toast_login_failed">Login failed, please try again</string>
     
     <!-- PostListFragment -->
     <string name="menu_refresh">Refresh</string>

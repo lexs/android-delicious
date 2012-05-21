@@ -165,6 +165,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			} else {
 				ProgressDialogFragment dialog = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(DIALOG_TAG);
 				dialog.dismiss();
+				
+				Toast.makeText(LoginActivity.this, R.string.toast_login_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
