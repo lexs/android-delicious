@@ -15,6 +15,6 @@ Features
 
 Screenshots
 -----------
-![Recent bookmarks](master/screenshots/1.png)
-![Add bookmark](master/screenshots/2.png)
-![Login](master/screenshots/3.png)
+![Recent bookmarks](https://raw.github.com/lexs/android-delicious/master/screenshots/1.png)
+![Add bookmark](https://raw.github.com/lexs/android-delicious/master/screenshots/2.png)
+![Login](https://raw.github.com/lexs/android-delicious/master/screenshots/3.png)
