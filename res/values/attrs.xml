@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ListTextView">
+        <attr name="moreText" format="string" />
+        <attr name="moreTextColor" format="color" />
+    </declare-styleable>
+
+</resources>

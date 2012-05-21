@@ -11,6 +11,8 @@
     <string name="clipboard_text">Save copied link?</string>
     <string name="clipboard_button">Save</string>
     
+    <string name="posts_more_ellipsis">+ %d</string>
+    
     <!-- AddBookmarkActivity -->
     <string name="activity_add_bookmark_title">Save link</string>
     <string name="menu_cancel">Cancel</string>

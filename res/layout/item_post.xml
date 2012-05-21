@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/se.alexanderblom.delicious"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
@@ -14,7 +15,6 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"  />
-   
     
     <TextView android:id="@+id/url"
         android:layout_width="match_parent"
@@ -32,16 +32,18 @@
         android:layout_alignParentRight="true"
         android:singleLine="true" />
     
-    <TextView android:id="@+id/tags"
+    <se.alexanderblom.delicious.view.ListTextView android:id="@+id/tags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/url"
         android:layout_toLeftOf="@id/time"
-        android:paddingRight="8dip"
+        android:layout_marginRight="8dip"
         android:lineSpacingExtra="1dp"
         android:singleLine="true"
         android:ellipsize="none"
-        android:textColor="#fff" />
+        android:textColor="#fff"
+        app:moreText="@string/posts_more_ellipsis"
+        app:moreTextColor="?android:attr/textColorTertiary" />
     
 
 </RelativeLayout>

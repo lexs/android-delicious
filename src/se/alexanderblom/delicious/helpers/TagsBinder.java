@@ -14,6 +14,9 @@ public class TagsBinder {
 	private static final float SATURATION = 0.7f;
 	private static final float LIGHTNESS = 0.9f;
 	
+	// Hard space
+	private static final char SEPARATOR = '\u00a0';
+	
 	// This gives nice looking colors and is consistent
 	private static final int HASH_SEED = 1337;
 	private static final HashFunction HASH_FUNCTION = Hashing.murmur3_32(HASH_SEED);
@@ -23,7 +26,7 @@ public class TagsBinder {
 		v.setText(tagList, TextView.BufferType.SPANNABLE);
 	}
 
-	private CharSequence buildTagList(List<String> tags) {
+	private SpannableStringBuilder buildTagList(List<String> tags) {
 		SpannableStringBuilder builder = new SpannableStringBuilder();
 		
 		for (String tag : tags) {
@@ -36,13 +39,16 @@ public class TagsBinder {
 			
 			int color = generateColor(tag);
 			builder.setSpan(new BackgroundColorSpan(color), pos, builder.length(), 0);
-			
-			builder.append(' ');
+
+			builder.append(SEPARATOR);
 		}
+		
+		// Remove last hard space
+		builder.delete(builder.length() - 1, builder.length());
 		
 		return builder;
 	}
-	
+
 	private int generateColor(String text) {
 		float hue = floatFromText(text, 0f, 1f);
 		return HSBtoColor(hue, SATURATION, LIGHTNESS);
