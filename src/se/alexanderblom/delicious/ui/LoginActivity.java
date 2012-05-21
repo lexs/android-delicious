@@ -79,18 +79,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			finish();
 		}
 	}
-	
-	@Override
-	public void finish() {
-		super.finish();
-		
-		// Should we start an activity?
-		Intent intent = getIntent().getParcelableExtra(EXTRA_LAUNCH);
-		if (intent != null) {
-			startActivity(intent);
-		}
-	}
-	
+
 	private void handleLogin() {
 		String username = usernameView.getText().toString();
 		String password = passwordView.getText().toString();
@@ -120,9 +109,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
 		
 		setAccountAuthenticatorResult(result);
+		
+		// Should we start an activity?
+		Intent intent = getIntent().getParcelableExtra(EXTRA_LAUNCH);
+		if (intent != null) {
+			startActivity(intent);
+		}
+		
 		finish();
 	}
-	
+
 	private class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		private String username;
 		private String password;

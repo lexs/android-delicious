@@ -120,7 +120,7 @@ public class MainActivity extends Activity {
 		if (!deliciousAccount.exists()) {
 			// Ask user to add an account
 			Intent intent = new Intent(this, LoginActivity.class)
-			.putExtra(LoginActivity.EXTRA_LAUNCH, new Intent(this, MainActivity.class));
+					.putExtra(LoginActivity.EXTRA_LAUNCH, new Intent(this, MainActivity.class));
 		
 			startActivity(intent);
 			finish();
