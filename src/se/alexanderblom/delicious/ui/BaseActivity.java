@@ -23,7 +23,13 @@ public class BaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		deliciousAccount = new DeliciousAccount(this);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
 		
+		// Check if account is still there
 		checkAccount();
 	}
 	
@@ -56,10 +62,10 @@ public class BaseActivity extends Activity {
 	
 	protected void checkAccount() {
 		if (!deliciousAccount.exists()) {
-			// Ask user to add an account
+			Log.d(TAG, "Account missing, asking user to add one");
+			
 			Intent intent = new Intent(this, LoginActivity.class)
 					.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-		
 			startActivityForResult(intent, REQUEST_LOGIN);
 		}
 	}
