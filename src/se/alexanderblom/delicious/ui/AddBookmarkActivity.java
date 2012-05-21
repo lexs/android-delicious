@@ -62,7 +62,7 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
         privateView = (CheckBox) findViewById(R.id.mark_private);
         
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, TAGS);
+                android.R.layout.simple_spinner_dropdown_item, TAGS);
         tagsView.setAdapter(adapter);
         tagsView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         
