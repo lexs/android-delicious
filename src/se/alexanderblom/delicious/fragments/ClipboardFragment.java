@@ -1,12 +1,13 @@
-package se.alexanderblom.delicious.helpers;
+package se.alexanderblom.delicious.fragments;
 
 import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.ui.AddBookmarkActivity;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Patterns;
@@ -14,13 +15,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedListener {
-	private static final String TAG = "ClipboardHandler";
+public class ClipboardFragment extends Fragment implements ClipboardManager.OnPrimaryClipChangedListener {
+	public static final String TAG = "ClipboardFragment";
 	
 	private static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 	private static final int LINK_TIMEOUT = 6 * 1000; // 6 seconds
 	
-	private Activity activity;
 	private Handler handler;
 	
 	private ClipboardManager clipboard;
@@ -30,33 +30,55 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 	
 	private String url;
 	
-	public ClipboardHandler(Activity activity) {
-		this.activity = activity;
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		
 		handler = new Handler();
 		
-		clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+		clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 		
-		clipboardDisplay = activity.findViewById(R.id.clipboard_display);
-		clipboardLinkView = (TextView) activity.findViewById(R.id.clipboard_link);
+		clipboardDisplay = getActivity().findViewById(R.id.clipboard_display);
+		clipboardLinkView = (TextView) getActivity().findViewById(R.id.clipboard_link);
 		
-		View clipboardButton = activity.findViewById(R.id.clipboard_save_button);
+		View clipboardButton = getActivity().findViewById(R.id.clipboard_save_button);
 		clipboardButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				saveClipboardLink();
 			}
 		});
+		
+		if (savedInstanceState == null) {
+			// Just launched, check clipboard
+			checkClipboard();
+		}
+		
+		// We don't have any heavy state
+		setRetainInstance(true);
 	}
 	
+	@Override
 	public void onPause() {
+		super.onPause();
+		
 		clipboard.removePrimaryClipChangedListener(this);
 	}
 	
+	@Override
 	public void onResume() {
-		clipboard.addPrimaryClipChangedListener(this);
+		super.onResume();
 		
-		checkClipboard();
+		clipboard.addPrimaryClipChangedListener(this);
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		// Odd bug which requires this for savedInstanceState to not be null
+		// See http://code.google.com/p/android/issues/detail?id=31732
+		outState.putString("", "");
 	}
 	
 	@Override
@@ -144,9 +166,9 @@ public class ClipboardHandler implements ClipboardManager.OnPrimaryClipChangedLi
 	}
 */
 	private void saveClipboardLink() {
-		Intent intent = new Intent(Intent.ACTION_SEND, null, activity, AddBookmarkActivity.class)
-			.putExtra(Intent.EXTRA_TEXT, url);
+		Intent intent = new Intent(Intent.ACTION_SEND, null, getActivity(), AddBookmarkActivity.class)
+				.putExtra(Intent.EXTRA_TEXT, url);
 		
-		activity.startActivity(intent);
+		startActivity(intent);
 	}
 }

@@ -3,8 +3,8 @@ package se.alexanderblom.delicious.ui;
 import se.alexanderblom.delicious.Constants;
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.fragments.ClipboardFragment;
 import se.alexanderblom.delicious.fragments.PostListFragment;
-import se.alexanderblom.delicious.helpers.ClipboardHandler;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -23,15 +23,18 @@ import android.view.ViewGroup;
 public class MainActivity extends BaseActivity {
 	private static final String TAG = "MainActivity";
 	
-	private ClipboardHandler clipboarHandler;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		
-		clipboarHandler = new ClipboardHandler(this);
+
+		if (savedInstanceState == null) {
+			Log.d(TAG, "Launching clipboard manager");
+			getFragmentManager().beginTransaction()
+					.add(new ClipboardFragment(), ClipboardFragment.TAG)
+					.commit();
+		}
 		
 		ViewGroup container = (ViewGroup) findViewById(R.id.container);
 		LayoutTransition transition = new LayoutTransition();
@@ -45,20 +48,6 @@ public class MainActivity extends BaseActivity {
 		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
 		
 		container.setLayoutTransition(transition);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		clipboarHandler.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		
-		clipboarHandler.onResume();
 	}
 
 	@Override
