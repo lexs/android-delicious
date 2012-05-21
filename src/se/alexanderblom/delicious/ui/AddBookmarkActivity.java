@@ -1,12 +1,10 @@
 package se.alexanderblom.delicious.ui;
 
 import se.alexanderblom.delicious.BookmarkService;
-import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.DeliciousApplication;
 import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.helpers.TitleFetcher;
 import se.alexanderblom.delicious.util.DetachableResultReceiver;
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +26,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class AddBookmarkActivity extends Activity implements DetachableResultReceiver.Receiver {
+public class AddBookmarkActivity extends BaseActivity implements DetachableResultReceiver.Receiver {
 	private static final String DIALOG_TAG = "saving_link";
 	
 	private EditText urlView;
@@ -37,7 +35,6 @@ public class AddBookmarkActivity extends Activity implements DetachableResultRec
 	private MultiAutoCompleteTextView tagsView;
 	private CheckBox privateView;
 	
-	private DeliciousAccount deliciousAccount;
 	private DetachableResultReceiver receiver;
 	
 	private TitleFetcher titleFetcher;
@@ -55,7 +52,6 @@ public class AddBookmarkActivity extends Activity implements DetachableResultRec
         errorDrawable = DeliciousApplication.getErrorDrawable();
         
         titleFetcher = new TitleFetcher(this);
-        deliciousAccount = new DeliciousAccount(this);
         
         receiver = new DetachableResultReceiver(new Handler());
         
@@ -105,8 +101,6 @@ public class AddBookmarkActivity extends Activity implements DetachableResultRec
         
         // Fetch title if necessary
         titleFetcher.maybeFetchTitle();
-        
-        checkAccount();
     }
     
 	@Override
@@ -149,17 +143,6 @@ public class AddBookmarkActivity extends Activity implements DetachableResultRec
 		}
 		
 		return true;
-	}
-	
-	private void checkAccount() {
-		if (!deliciousAccount.exists()) {
-			// Ask user to add an account
-			Intent intent = new Intent(this, LoginActivity.class)
-				.putExtra(LoginActivity.EXTRA_LAUNCH, getIntent());
-			
-			startActivity(intent);
-			finish();
-		}
 	}
 
 	private boolean isValidBookmark() {

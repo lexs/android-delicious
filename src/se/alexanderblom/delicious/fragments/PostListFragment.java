@@ -12,6 +12,7 @@ import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.adapter.PostsAdapter;
 import se.alexanderblom.delicious.model.Post;
 import se.alexanderblom.delicious.model.PostsParser;
+import se.alexanderblom.delicious.ui.BaseActivity;
 import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -44,8 +45,16 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 		adapter = new PostsAdapter(getActivity());
 		
 		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		
-		getLoaderManager().initLoader(0, null, this);
+		BaseActivity activity = (BaseActivity) getActivity();
+		if (activity.hasAccount()) {
+			getLoaderManager().initLoader(0, null, this);
+		}
 	}
 
 	@Override
@@ -59,7 +68,7 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_refresh) {
 			Log.d(TAG, "Refreshing posts");
-			getLoaderManager().restartLoader(0, null, this);
+			reloadPosts();
 			
 			return true;
 		} else {
@@ -90,6 +99,14 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	@Override
 	public void onLoaderReset(Loader<List<Post>> loader) {
 		adapter.clear();
+	}
+	
+	public void reloadPosts() {
+		getLoaderManager().restartLoader(0, null, this);
+	}
+	
+	public void loadPosts() {
+		getLoaderManager().initLoader(0, null, this);
 	}
 	
 	private static class PostsLoader extends AsyncLoader<List<Post>> {

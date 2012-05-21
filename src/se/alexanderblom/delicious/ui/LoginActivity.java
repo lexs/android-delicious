@@ -11,7 +11,6 @@ import se.alexanderblom.delicious.R;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,8 +27,6 @@ import android.widget.Toast;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 	private static final String TAG = "LoginActivity";
-	
-	public static final String EXTRA_LAUNCH = "launch";
 	
 	private static final String DIALOG_TAG = "logging_in";
 	
@@ -109,13 +106,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
 		
 		setAccountAuthenticatorResult(result);
-		
-		// Should we start an activity?
-		Intent intent = getIntent().getParcelableExtra(EXTRA_LAUNCH);
-		if (intent != null) {
-			startActivity(intent);
-		}
-		
+
+		setResult(RESULT_OK);
 		finish();
 	}
 

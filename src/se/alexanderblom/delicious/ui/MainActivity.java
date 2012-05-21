@@ -3,6 +3,7 @@ package se.alexanderblom.delicious.ui;
 import se.alexanderblom.delicious.Constants;
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.fragments.PostListFragment;
 import se.alexanderblom.delicious.helpers.ClipboardHandler;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -10,7 +11,6 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,11 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 	private static final String TAG = "MainActivity";
 	
 	private ClipboardHandler clipboarHandler;
-	private DeliciousAccount deliciousAccount;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,7 +32,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		clipboarHandler = new ClipboardHandler(this);
-		deliciousAccount = new DeliciousAccount(this);
 		
 		ViewGroup container = (ViewGroup) findViewById(R.id.container);
 		LayoutTransition transition = new LayoutTransition();
@@ -47,8 +45,6 @@ public class MainActivity extends Activity {
 		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
 		
 		container.setLayoutTransition(transition);
-		
-		checkAccount();
 	}
 	
 	@Override
@@ -88,6 +84,13 @@ public class MainActivity extends Activity {
 		
 		return true;
 	}
+	
+	@Override
+	protected void accountChanged(DeliciousAccount account) {
+		// Account has changed, reload posts
+		PostListFragment f = (PostListFragment) getFragmentManager().findFragmentById(R.id.recent_posts);
+		f.reloadPosts();
+	}
 
 	private void logout() {
 		Log.d(TAG, "Removing account");
@@ -114,16 +117,5 @@ public class MainActivity extends Activity {
 		};
 		
 		accountManager.removeAccount(account, callback, null);
-	}
-
-	private void checkAccount() {
-		if (!deliciousAccount.exists()) {
-			// Ask user to add an account
-			Intent intent = new Intent(this, LoginActivity.class)
-					.putExtra(LoginActivity.EXTRA_LAUNCH, new Intent(this, MainActivity.class));
-		
-			startActivity(intent);
-			finish();
-		}
 	}
 }
