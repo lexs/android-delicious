@@ -81,10 +81,8 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 
 	@Override
 	public void onLoadFinished(Loader<String> loader, String title) {
-		// We don't need to watch the title anymore
-		titleView.removeTextChangedListener(titleWatcher);
-		
-		titleView.setHint(R.string.field_title);
+		restoreView();
+
 		titleView.setText(title);
 		
 		// Select text so the user can easily change it
@@ -97,8 +95,13 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 
 	@Override
 	public void onLoaderReset(Loader<String> loader) {
+		restoreView();
+	}
+	
+	private void restoreView() {
 		// We don't need to watch the title anymore
 		titleView.removeTextChangedListener(titleWatcher);
+		titleView.setHint(R.string.field_title);
 	}
 	
 	public void maybeFetchTitle() {
@@ -117,6 +120,11 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 		
 		public TitleLoader(Context context, String url) {
 			super(context);
+			
+			// Ensure url is valid
+			if (!url.startsWith("http://") && !url.startsWith("https://")) {
+				url = "http://" + url;
+			}
 			
 			this.url = url;
 		}
