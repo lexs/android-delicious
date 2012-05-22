@@ -19,19 +19,32 @@ public class PostsAdapter extends ListAdapter<Post> {
 
 	@Override
 	public View newView(LayoutInflater inflater, ViewGroup parent, int position) {
-		return inflater.inflate(RESOURCE, parent, false);
+		View v = inflater.inflate(RESOURCE, parent, false);
+		
+		ViewHolder holder = new ViewHolder();
+		holder.titleView = (TextView) v.findViewById(R.id.title);
+		holder.timeView = (TextView) v.findViewById(R.id.time);
+		holder.urlView = (TextView) v.findViewById(R.id.url);
+		holder.tagsView = (TextView) v.findViewById(R.id.tags);
+		v.setTag(holder);
+		
+		return v;
 	}
 
 	@Override
 	public void bindView(View v, Post post) {
-		TextView titleView = (TextView) v.findViewById(R.id.title);
-		TextView timeView = (TextView) v.findViewById(R.id.time);
-		TextView urlView = (TextView) v.findViewById(R.id.url);
-		TextView tagsView = (TextView) v.findViewById(R.id.tags);
+		ViewHolder holder = (ViewHolder) v.getTag();
 		
-		titleView.setText(post.getTitle());
-		timeView.setText(DateUtils.getRelativeTimeSpanString(post.getTime()));
-		urlView.setText(post.getLink());
-		tagsView.setText(post.getStyledTags(), TextView.BufferType.SPANNABLE);
+		holder.titleView.setText(post.getTitle());
+		holder.timeView.setText(DateUtils.getRelativeTimeSpanString(post.getTime()));
+		holder.urlView.setText(post.getLink());
+		holder.tagsView.setText(post.getStyledTags(), TextView.BufferType.SPANNABLE);
+	}
+	
+	private static class ViewHolder {
+		public TextView titleView;
+		public TextView timeView;
+		public TextView urlView;
+		public TextView tagsView;
 	}
 }
