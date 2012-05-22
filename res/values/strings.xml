@@ -44,6 +44,14 @@
     <!-- PostListFragment -->
     <string name="menu_refresh">Refresh</string>
     
+    <!-- ConnectionErrorFragment -->
+    <string name="dialog_button_retry">Retry</string>
+    <string name="dialog_button_cancel">Cancel</string>
+    <string name="dialog_button_more">More</string>
+    <string name="dialog_connection_error_title">Connection error</string>
+    <string name="dialog_connection_error_message">A network error has occurred. Please check that you
+        are connected to the network and try again.</string>
+    
     <!-- BookmarkService -->
     <string name="toast_bookmark_saved">Link saved to Delicious</string>
     <string name="toast_bookmark_saved_failed">Failed to save link, please try again</string>

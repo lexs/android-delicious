@@ -30,13 +30,14 @@ import android.widget.ListView;
 
 public class PostListFragment extends ListFragment implements LoaderCallbacks<List<Post>> {
 	private static final String TAG = "PostListFragment";
-	
+
 	private static final String RECENTS_URL = "https://api.del.icio.us/v1/json/posts/recent";
-	
+	private static final int POSTS_LOADER = 1;
+
 	private DeliciousAccount deliciousAccount;
-	
+
 	private PostsAdapter adapter;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,23 +45,24 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 		deliciousAccount = new DeliciousAccount(getActivity());
 		adapter = new PostsAdapter(getActivity());
 		
+		setListAdapter(adapter);
 		setHasOptionsMenu(true);
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+
 		BaseActivity activity = (BaseActivity) getActivity();
 		if (activity.hasAccount()) {
-			getLoaderManager().initLoader(0, null, this);
+			getLoaderManager().initLoader(POSTS_LOADER, null, this);
 		}
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		
+
 		inflater.inflate(R.menu.menu_post_list, menu);
 	}
 
@@ -69,7 +71,7 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 		if (item.getItemId() == R.id.menu_refresh) {
 			Log.d(TAG, "Refreshing posts");
 			reloadPosts();
-			
+
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -79,45 +81,61 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Post post = adapter.getItem(position);
-		
+
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLink()));
 		startActivity(intent);
 	}
 
 	@Override
 	public Loader<List<Post>> onCreateLoader(int id, Bundle args) {
+		setListShown(false);
 		return new PostsLoader(getActivity(), deliciousAccount, RECENTS_URL);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<List<Post>> loader, List<Post> posts) {
-		adapter.clear();
-		adapter.addAll(posts);
-		setListAdapter(adapter);
+		if (posts != null) {
+			adapter.clear();
+			adapter.addAll(posts);
+			setListShown(true);
+		} else {
+			// There was an error
+			showLoadingError();
+		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<List<Post>> loader) {
 		adapter.clear();
 	}
-	
+
 	public void reloadPosts() {
-		getLoaderManager().restartLoader(0, null, this);
+		getLoaderManager().restartLoader(POSTS_LOADER, null, this);
 	}
-	
+
 	public void loadPosts() {
-		getLoaderManager().initLoader(0, null, this);
+		getLoaderManager().initLoader(POSTS_LOADER, null, this);
 	}
-	
+
+	private void showLoadingError() {
+		getLoaderManager().destroyLoader(POSTS_LOADER);
+		
+		ConnectionErrorFragment f = ConnectionErrorFragment.newInlineError(this);
+		getFragmentManager().beginTransaction()
+				.detach(this)
+				.add(getId(), f)
+				.commitAllowingStateLoss();
+	}
+
 	private static class PostsLoader extends AsyncLoader<List<Post>> {
 		private static final String TAG = "PostsLoader";
-		
+
 		private DeliciousAccount account;
 		private String url;
-		
+
 		public PostsLoader(Context context, DeliciousAccount account, String url) {
 			super(context);
-			
+
 			this.account = account;
 			this.url = url;
 		}
@@ -127,17 +145,17 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 			try {
 				HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
 				account.addAuth(request);
-				
+
 				try {
 					InputStream is = request.getInputStream();
-					
+
 					return new PostsParser(new BufferedInputStream(is)).getPosts();
 				} finally {
 					request.disconnect();
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to fetch posts", e);
-				
+
 				return null;
 			}
 		}

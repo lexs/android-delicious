@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+    
+    <TextView android:id="@+id/dialog_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignBaseline="@+id/button_retry"
+		android:layout_marginRight="10dp"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:text="@string/dialog_connection_error_title" />
+		
+	<Button android:id="@+id/button_retry"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/dialog_title"
+		android:text="@string/dialog_button_retry" />
+		
+	<TextView
+		android:layout_width="0px"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@id/dialog_title"
+		android:layout_alignRight="@id/button_retry"
+		android:layout_below="@id/button_retry"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:text="@string/dialog_connection_error_message" />
+    
+</RelativeLayout>

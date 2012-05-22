@@ -30,9 +30,9 @@ public class MainActivity extends BaseActivity {
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
-			Log.d(TAG, "Launching clipboard manager");
 			getFragmentManager().beginTransaction()
 					.add(new ClipboardFragment(), ClipboardFragment.TAG)
+					.add(R.id.content, new PostListFragment())
 					.commit();
 		}
 		
@@ -76,9 +76,10 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void accountChanged(DeliciousAccount account) {
-		// Account has changed, reload posts
-		PostListFragment f = (PostListFragment) getFragmentManager().findFragmentById(R.id.recent_posts);
-		f.reloadPosts();
+		// Just replace our old fragment, this works when an error is shown too
+		getFragmentManager().beginTransaction()
+				.replace(R.id.content, new PostListFragment())
+				.commit();
 	}
 
 	private void logout() {

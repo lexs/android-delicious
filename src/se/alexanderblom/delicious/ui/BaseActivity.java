@@ -35,6 +35,8 @@ public class BaseActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
 		if (requestCode == REQUEST_LOGIN) {
 			if (resultCode == RESULT_OK) {
 				Log.d(TAG, "Login okay");

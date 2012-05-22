@@ -7,8 +7,7 @@
     android:paddingLeft="0dip"
     android:paddingRight="0dip">
     
-    <fragment android:name="se.alexanderblom.delicious.fragments.PostListFragment"
-        android:id="@+id/recent_posts"
+    <FrameLayout android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1" />
