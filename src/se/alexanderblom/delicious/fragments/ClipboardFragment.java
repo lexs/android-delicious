@@ -54,6 +54,9 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 			checkClipboard();
 		}
 		
+		// We have no ui
+		setUserVisibleHint(false);
+		
 		// We don't have any heavy state
 		setRetainInstance(true);
 	}

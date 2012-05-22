@@ -3,6 +3,7 @@ package se.alexanderblom.delicious.ui;
 import se.alexanderblom.delicious.BookmarkService;
 import se.alexanderblom.delicious.DeliciousApplication;
 import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.fragments.ProgressDialogFragment;
 import se.alexanderblom.delicious.helpers.TitleFetcher;
 import se.alexanderblom.delicious.util.DetachableResultReceiver;
 import android.app.FragmentManager;

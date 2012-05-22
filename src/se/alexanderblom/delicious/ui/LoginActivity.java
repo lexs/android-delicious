@@ -8,6 +8,7 @@ import se.alexanderblom.delicious.Constants;
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.DeliciousApplication;
 import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.fragments.ProgressDialogFragment;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;

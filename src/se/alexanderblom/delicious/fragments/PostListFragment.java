@@ -95,8 +95,7 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	@Override
 	public void onLoadFinished(Loader<List<Post>> loader, List<Post> posts) {
 		if (posts != null) {
-			adapter.clear();
-			adapter.addAll(posts);
+			adapter.setList(posts);
 			setListShown(true);
 		} else {
 			// There was an error
