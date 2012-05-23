@@ -33,15 +33,17 @@ public class TagsBinder {
 			
 			int color = generateColor(tag);
 			builder.setSpan(new ForegroundColorSpan(color), pos, builder.length(), 0);
-			builder.setSpan(new StyleSpan(Typeface.BOLD), pos, builder.length(), 0);
 			
-			// Thin space, so we get 1.5 spaces between
 			builder.append(SEPARATOR);
+			// Thin space, so we get 1.5 spaces between
 			builder.append('\u2009');
 		}
 		
 		// Remove last thin and hard space
 		builder.delete(builder.length() - 2, builder.length());
+		
+		// Make the whole thing bold
+		builder.setSpan(new StyleSpan(Typeface.BOLD), 0, builder.length(), 0);
 		
 		return builder;
 	}

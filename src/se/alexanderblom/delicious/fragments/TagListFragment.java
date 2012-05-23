@@ -9,7 +9,7 @@ import java.util.List;
 
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
-import se.alexanderblom.delicious.adapter.TagAdapter;
+import se.alexanderblom.delicious.adapter.TagsAdapter;
 import se.alexanderblom.delicious.model.Tag;
 import se.alexanderblom.delicious.model.TagsParser;
 import se.alexanderblom.delicious.ui.BaseActivity;
@@ -35,14 +35,14 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 	private static final int TAGS_LOADER = 1;
 	
 	private DeliciousAccount account;
-	private TagAdapter adapter;
+	private TagsAdapter adapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		account = new DeliciousAccount(getActivity());
-		adapter = new TagAdapter(getActivity());
+		adapter = new TagsAdapter(getActivity());
 		
 		setListAdapter(adapter);
 		setHasOptionsMenu(true);

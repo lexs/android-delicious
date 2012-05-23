@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class TagAdapter extends ListAdapter<Tag> {
+public class TagsAdapter extends ListAdapter<Tag> {
 	private static final int RESOURCE = R.layout.item_tag;
 	
-	public TagAdapter(Context context) {
+	public TagsAdapter(Context context) {
 		super(context);
 	}
 
