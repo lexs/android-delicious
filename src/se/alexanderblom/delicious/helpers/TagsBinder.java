@@ -44,7 +44,7 @@ public class TagsBinder {
 		return builder;
 	}
 
-	private static int generateColor(String text) {
+	public static int generateColor(String text) {
 		float hue = floatFromText(text, 0f, 1f);
 		return HSBtoColor(hue, SATURATION, LIGHTNESS);
 	}

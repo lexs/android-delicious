@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingRight="16dip">
+    
+    <View
+        android:id="@+id/tagColor"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="12dip" />
+    
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:paddingTop="4dip"
+        android:paddingBottom="4dip"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceListItem" />
+    
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="4dip"
+        android:gravity="center_vertical"
+        android:paddingTop="4dip"
+        android:paddingBottom="4dip"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="?android:attr/textColorTertiary" />
+    
+</LinearLayout>
