@@ -2,9 +2,11 @@ package se.alexanderblom.delicious.helpers;
 
 import java.util.List;
 
+import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashFunction;
@@ -27,19 +29,19 @@ public class TagsBinder {
 		for (String tag : tags) {
 			int pos = builder.length();
 			
-			// Use spaces around tag
-			builder.append(' ');
 			builder.append(tag);
-			builder.append(' ');
 			
 			int color = generateColor(tag);
-			builder.setSpan(new BackgroundColorSpan(color), pos, builder.length(), 0);
-
+			builder.setSpan(new ForegroundColorSpan(color), pos, builder.length(), 0);
+			builder.setSpan(new StyleSpan(Typeface.BOLD), pos, builder.length(), 0);
+			
+			// Thin space, so we get 1.5 spaces between
 			builder.append(SEPARATOR);
+			builder.append('\u2009');
 		}
 		
-		// Remove last hard space
-		builder.delete(builder.length() - 1, builder.length());
+		// Remove last thin and hard space
+		builder.delete(builder.length() - 2, builder.length());
 		
 		return builder;
 	}
