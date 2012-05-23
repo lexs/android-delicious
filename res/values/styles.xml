@@ -5,6 +5,10 @@
 		<item name="android:background">@color/emphasis</item>
 	</style>
 	
+	<style name="Widget.ActionBar.Main" parent="Widget.ActionBar">
+        <item name="android:displayOptions">showHome|showCustom</item>
+    </style>
+	
 	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">
 	    <item name="android:displayOptions">showTitle|showHome|homeAsUp</item>
 		<item name="android:title">@string/activity_add_bookmark_title</item>
@@ -13,6 +17,10 @@
 	<style name="Theme.Delicious" parent="android:Theme.Holo.Light.DarkActionBar">
 		<item name="android:actionBarStyle">@style/Widget.ActionBar</item>
 	</style>
+	
+	<style name="Theme.Delicious.Main" parent="Theme.Delicious">
+        <item name="android:actionBarStyle">@style/Widget.ActionBar.Main</item>
+    </style>
 	
 	<style name="Theme.Delicious.AddBookmark" parent="Theme.Delicious">
 	    <item name="android:title">@string/activity_add_bookmark_title</item>

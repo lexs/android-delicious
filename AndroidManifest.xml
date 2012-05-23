@@ -21,7 +21,7 @@
          <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Delicious" >
+            android:theme="@style/Theme.Delicious.Main" >
             
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

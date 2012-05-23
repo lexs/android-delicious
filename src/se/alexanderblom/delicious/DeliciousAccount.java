@@ -17,6 +17,11 @@ public class DeliciousAccount {
 		accountManager = AccountManager.get(context.getApplicationContext());
 	}
 	
+	public String getUsername() {
+		Account account = get();
+		return account != null ? account.name : null;
+	}
+	
 	public Account get() {
 		Account accounts[] = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
 		

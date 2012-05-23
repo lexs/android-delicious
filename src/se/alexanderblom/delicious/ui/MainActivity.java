@@ -11,6 +11,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,8 +20,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ActionBar.OnNavigationListener {
 	private static final String TAG = "MainActivity";
 	
 	@Override
@@ -28,6 +30,8 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
+		
+		getActionBar().setCustomView(R.layout.action_bar_navigation);
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -48,6 +52,8 @@ public class MainActivity extends BaseActivity {
 		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
 		
 		container.setLayoutTransition(transition);
+		
+		updateUsername(getAccount());
 	}
 
 	@Override
@@ -75,11 +81,23 @@ public class MainActivity extends BaseActivity {
 	}
 	
 	@Override
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		return true;
+	}
+	
+	@Override
 	protected void accountChanged(DeliciousAccount account) {
 		// Just replace our old fragment, this works when an error is shown too
 		getFragmentManager().beginTransaction()
 				.replace(R.id.content, new PostListFragment())
 				.commit();
+		
+		updateUsername(account);
+	}
+	
+	private void updateUsername(DeliciousAccount account) {
+		TextView usernameView = (TextView) getActionBar().getCustomView().findViewById(R.id.username);
+		usernameView.setText(account.getUsername());
 	}
 
 	private void logout() {
