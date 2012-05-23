@@ -69,6 +69,7 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 
 		BaseActivity activity = (BaseActivity) getActivity();
 		if (activity.hasAccount()) {
+			setListShown(false);
 			getLoaderManager().initLoader(POSTS_LOADER, null, this);
 		}
 	}

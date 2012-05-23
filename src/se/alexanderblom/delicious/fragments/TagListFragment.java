@@ -54,6 +54,7 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		
 		BaseActivity activity = (BaseActivity) getActivity();
 		if (activity.hasAccount()) {
+			setListShown(false);
 			getLoaderManager().initLoader(TAGS_LOADER, null, this);
 		}
 	}
