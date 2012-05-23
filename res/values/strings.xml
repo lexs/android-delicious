@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Delicious</string>
-    
+
+    <!-- Common -->
+    <string name="menu_refresh">Refresh</string>
     <string name="field_empty_error">%s can\'t be empty.</string>
     
     <!-- MainActivity -->
@@ -47,9 +49,6 @@
     
     <string name="toast_account_exists">Only one account is supported</string>
     <string name="toast_login_failed">Login failed, please try again</string>
-    
-    <!-- PostListFragment -->
-    <string name="menu_refresh">Refresh</string>
     
     <!-- ConnectionErrorFragment -->
     <string name="dialog_button_retry">Retry</string>

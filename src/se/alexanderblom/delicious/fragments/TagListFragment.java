@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.List;
 
 import se.alexanderblom.delicious.DeliciousAccount;
+import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.adapter.TagAdapter;
 import se.alexanderblom.delicious.model.Tag;
 import se.alexanderblom.delicious.model.TagsParser;
@@ -21,6 +22,9 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -41,7 +45,7 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		adapter = new TagAdapter(getActivity());
 		
 		setListAdapter(adapter);
-		setHasOptionsMenu(false);
+		setHasOptionsMenu(true);
 	}
 	
 	@Override
@@ -51,6 +55,25 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		BaseActivity activity = (BaseActivity) getActivity();
 		if (activity.hasAccount()) {
 			getLoaderManager().initLoader(TAGS_LOADER, null, this);
+		}
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+
+		inflater.inflate(R.menu.menu_refresh, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_refresh) {
+			Log.d(TAG, "Refreshing tags");
+			getLoaderManager().restartLoader(TAGS_LOADER, null, this);
+
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
 		}
 	}
 	
@@ -96,7 +119,7 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 				.add(getId(), f)
 				.commitAllowingStateLoss();
 	}
-	
+
 	private static class TagsLoader extends AsyncLoader<List<Tag>> {
 		private DeliciousAccount account;
 		private String url;

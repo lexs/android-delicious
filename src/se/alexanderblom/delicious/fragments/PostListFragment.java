@@ -77,14 +77,14 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 
-		inflater.inflate(R.menu.menu_post_list, menu);
+		inflater.inflate(R.menu.menu_refresh, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_refresh) {
 			Log.d(TAG, "Refreshing posts");
-			reloadPosts();
+			getLoaderManager().restartLoader(POSTS_LOADER, null, this);
 
 			return true;
 		} else {
@@ -122,14 +122,6 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	@Override
 	public void onLoaderReset(Loader<List<Post>> loader) {
 		adapter.clear();
-	}
-
-	public void reloadPosts() {
-		getLoaderManager().restartLoader(POSTS_LOADER, null, this);
-	}
-
-	public void loadPosts() {
-		getLoaderManager().initLoader(POSTS_LOADER, null, this);
 	}
 
 	private void showLoadingError() {
