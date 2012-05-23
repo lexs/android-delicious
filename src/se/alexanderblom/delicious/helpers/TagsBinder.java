@@ -14,7 +14,7 @@ import com.google.common.hash.Hashing;
 
 public class TagsBinder {
 	private static final float SATURATION = 0.7f;
-	private static final float LIGHTNESS = 0.9f;
+	private static final float LIGHTNESS = 0.8f;
 	
 	// Hard space
 	private static final char SEPARATOR = '\u00a0';
