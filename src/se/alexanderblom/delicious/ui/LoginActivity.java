@@ -12,6 +12,7 @@ import se.alexanderblom.delicious.fragments.ProgressDialogFragment;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -92,19 +93,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 				passwordView.setError(getString(R.string.field_empty_error, getString(R.string.field_password)), errorDrawable);
 			}
  		} else {
-			new LoginTask(username, password).execute();
+			new LoginTask(this, username, password).execute();
 		}
 	}
 	
-	private void finishLogin(String username, String password) {
-		Account account = new Account(username, Constants.ACCOUNT_TYPE);
-		
-		AccountManager manager = AccountManager.get(this);
-		manager.addAccountExplicitly(account, password, null);
-		
+	private void finishLogin(Account account) {
 		Bundle result = new Bundle();
 		result.putString(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
-		result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
+		result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
 		
 		setAccountAuthenticatorResult(result);
 
@@ -112,11 +108,15 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		finish();
 	}
 
-	private class LoginTask extends AsyncTask<Void, Void, Boolean> {
+	private class LoginTask extends AsyncTask<Void, Void, Account> {
+		private AccountManager accountManager;
+		
 		private String username;
 		private String password;
 		
-		public LoginTask(String username, String password) {
+		public LoginTask(Context context, String username, String password) {
+			accountManager = AccountManager.get(context);
+			
 			this.username = username;
 			this.password = password;
 		}
@@ -128,7 +128,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		}
 		
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected Account doInBackground(Void... params) {
 			try {
 				HttpURLConnection request = (HttpURLConnection) new URL("https://api.del.icio.us/v1/posts/update").openConnection();
 				DeliciousAccount.addAuth(request, username, password);
@@ -137,17 +137,17 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 					int response = request.getResponseCode();
 					
 					if (response == 200) {
-						return true;
+						return createAccount();
 					} else if (response == 401) {
 						// Unauthorized
 						Log.e(TAG, "401 Unauthorized");
 						
-						return false;
+						return null;
 					} else {
 						// Unknown response
 						Log.e(TAG, "Unknown response code: " + response);
 						
-						return false;
+						return null;
 					}
 				} finally {
 					request.disconnect();
@@ -155,14 +155,23 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			} catch (IOException e) {
 				Log.e(TAG, "Login failed", e);
 				
-				return false;
+				return null;
 			}
+		}
+		
+		private Account createAccount() {
+			// We do this on here (on a separate thread) because this will cause
+			// disk access
+			Account account = new Account(username, Constants.ACCOUNT_TYPE);
+			accountManager.addAccountExplicitly(account, password, null);
+			
+			return account;
 		}
 
 		@Override
-		protected void onPostExecute(Boolean success) {
-			if (success) {
-				finishLogin(username, password);
+		protected void onPostExecute(Account account) {
+			if (account != null) {
+				finishLogin(account);
 			} else {
 				ProgressDialogFragment dialog = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(DIALOG_TAG);
 				dialog.dismiss();
