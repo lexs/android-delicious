@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
     android:orientation="horizontal"
     android:paddingRight="16dip">
     
@@ -22,7 +22,7 @@
         android:paddingBottom="4dip"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceListItem" />
+        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
     
     <TextView
         android:id="@+id/count"
@@ -33,7 +33,7 @@
         android:paddingTop="4dip"
         android:paddingBottom="4dip"
         android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="?android:attr/textColorTertiary" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#bcbcbc" />
     
 </LinearLayout>
