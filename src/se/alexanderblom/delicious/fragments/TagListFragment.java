@@ -1,0 +1,131 @@
+package se.alexanderblom.delicious.fragments;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
+import se.alexanderblom.delicious.DeliciousAccount;
+import se.alexanderblom.delicious.adapter.TagAdapter;
+import se.alexanderblom.delicious.model.Tag;
+import se.alexanderblom.delicious.model.TagsParser;
+import se.alexanderblom.delicious.ui.BaseActivity;
+import se.alexanderblom.delicious.ui.PostListActivity;
+import se.alexanderblom.delicious.util.AsyncLoader;
+import android.app.ListFragment;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
+import android.content.Intent;
+import android.content.Loader;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
+
+public class TagListFragment extends ListFragment implements LoaderCallbacks<List<Tag>> {
+	private static final String TAG = "TagListFragment";
+	
+	private static final String TAGS_URL = "https://api.del.icio.us/v1/json/tags/get";
+	private static final int TAGS_LOADER = 1;
+	
+	private DeliciousAccount account;
+	private TagAdapter adapter;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		account = new DeliciousAccount(getActivity());
+		adapter = new TagAdapter(getActivity());
+		
+		setListAdapter(adapter);
+		setHasOptionsMenu(false);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		BaseActivity activity = (BaseActivity) getActivity();
+		if (activity.hasAccount()) {
+			getLoaderManager().initLoader(TAGS_LOADER, null, this);
+		}
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		Tag tag = adapter.getItem(position);
+		String tagName = tag.getName();
+		
+		Intent intent = new Intent(getActivity(), PostListActivity.class)
+				.putExtra(PostListActivity.EXTRA_TAG, tagName);
+		
+		startActivity(intent);
+	}
+	
+	@Override
+	public Loader<List<Tag>> onCreateLoader(int id, Bundle args) {
+		setListShown(false);
+		return new TagsLoader(getActivity(), account, TAGS_URL);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<List<Tag>> loader, List<Tag> tags) {
+		if (tags != null) {
+			adapter.setList(tags);
+			setListShown(true);
+		} else {
+			// There was an error
+			showLoadingError();
+		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<List<Tag>> loader) {
+		adapter.clear();
+	}
+	
+	private void showLoadingError() {
+		getLoaderManager().destroyLoader(TAGS_LOADER);
+		
+		ConnectionErrorFragment f = ConnectionErrorFragment.newInlineError(this);
+		getFragmentManager().beginTransaction()
+				.detach(this)
+				.add(getId(), f)
+				.commitAllowingStateLoss();
+	}
+	
+	private static class TagsLoader extends AsyncLoader<List<Tag>> {
+		private DeliciousAccount account;
+		private String url;
+	
+		public TagsLoader(Context context, DeliciousAccount account, String url) {
+			super(context);
+			
+			this.account = account;
+			this.url = url;
+		}
+
+		@Override
+		public List<Tag> loadInBackground() {
+			try {
+				HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+				account.addAuth(request);
+
+				try {
+					InputStream is = request.getInputStream();
+
+					return new TagsParser(new BufferedInputStream(is)).getTags();
+				} finally {
+					request.disconnect();
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "Failed to fetch posts", e);
+
+				return null;
+			}
+		}
+	}
+}

@@ -10,7 +10,7 @@
     android:paddingBottom="0dip">
     
     <TextView android:id="@+id/page_title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="-4dip"
         android:singleLine="true"
@@ -18,7 +18,7 @@
         android:text="@string/page_recent" />
     
     <TextView android:id="@+id/username"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceSmall" />

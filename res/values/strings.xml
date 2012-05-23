@@ -8,12 +8,17 @@
     <string name="menu_add">Add link</string>
     <string name="menu_logout">Logout</string>
     
-    <string name="page_recent">Recent</string>
-    
     <string name="clipboard_text">Save copied link?</string>
     <string name="clipboard_button">Save</string>
     
     <string name="posts_more_ellipsis">+ %d</string>
+    
+    <!-- PostListActivity -->
+    <string name="page_recent">Recent</string>
+    <string name="page_tag">Tag: %s</string>
+    
+    <!-- TagListActivity -->
+    <string name="page_tags">Tags</string>
     
     <!-- AddBookmarkActivity -->
     <string name="activity_add_bookmark_title">Save link</string>

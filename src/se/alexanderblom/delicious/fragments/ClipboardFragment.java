@@ -21,6 +21,8 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 	private static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 	private static final int LINK_TIMEOUT = 6 * 1000; // 6 seconds
 	
+	private static String lastUrl = null;
+	
 	private Handler handler;
 	
 	private ClipboardManager clipboard;
@@ -98,10 +100,10 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 			CharSequence text = item.getText();
 			
 			// Check if it's a web url and that we have not previously seen it
-			if (Patterns.WEB_URL.matcher(text).find() && !text.equals(url)) {
+			if (!text.equals(lastUrl) && Patterns.WEB_URL.matcher(text).find() && !text.equals(url)) {
 				Log.d(TAG, "New web url found: " + text);
 				
-				url = text.toString();
+				lastUrl = url = text.toString();
 				
 				displayClipboard(text);
 			}

@@ -31,12 +31,26 @@ import android.widget.ListView;
 public class PostListFragment extends ListFragment implements LoaderCallbacks<List<Post>> {
 	private static final String TAG = "PostListFragment";
 
-	private static final String RECENTS_URL = "https://api.del.icio.us/v1/json/posts/recent";
+	private static final String ARG_URL = "url";
 	private static final int POSTS_LOADER = 1;
 
 	private DeliciousAccount deliciousAccount;
 
 	private PostsAdapter adapter;
+	
+	public static PostListFragment newInstance(String url) {
+		PostListFragment f = new PostListFragment();
+		f.setArguments(createArgs(url));
+		
+		return f;
+	}
+	
+	public static Bundle createArgs(String url) {
+		Bundle args = new Bundle();
+		args.putString(ARG_URL, url);
+		
+		return args;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -88,8 +102,10 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 
 	@Override
 	public Loader<List<Post>> onCreateLoader(int id, Bundle args) {
+		String url = getArguments().getString(ARG_URL);
+		
 		setListShown(false);
-		return new PostsLoader(getActivity(), deliciousAccount, RECENTS_URL);
+		return new PostsLoader(getActivity(), deliciousAccount, url);
 	}
 
 	@Override
