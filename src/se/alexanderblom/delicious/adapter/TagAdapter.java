@@ -19,18 +19,29 @@ public class TagAdapter extends ListAdapter<Tag> {
 
 	@Override
 	public View newView(LayoutInflater inflater, ViewGroup parent, int position) {
-		return inflater.inflate(RESOURCE, parent, false);
+		View v = inflater.inflate(RESOURCE, parent, false);
+		
+		ViewHolder holder = new ViewHolder();
+		holder.colorView = v.findViewById(R.id.tagColor);
+		holder.nameView = (TextView) v.findViewById(R.id.name);
+		holder.countView = (TextView) v.findViewById(R.id.count);
+		v.setTag(holder);
+		
+		return v;
 	}
 
 	@Override
 	public void bindView(View v, Tag tag) {
-		View colorView = v.findViewById(R.id.tagColor);
-		TextView nameView = (TextView) v.findViewById(R.id.name);
-		TextView countView = (TextView) v.findViewById(R.id.count);
+		ViewHolder holder = (ViewHolder) v.getTag();
 		
-		colorView.setBackgroundColor(TagsBinder.generateColor(tag.getName()));
-		nameView.setText(tag.getName());
-		countView.setText(String.valueOf(tag.getCount()));
+		holder.colorView.setBackgroundColor(TagsBinder.generateColor(tag.getName()));
+		holder.nameView.setText(tag.getName());
+		holder.countView.setText(String.valueOf(tag.getCount()));
 	}
 
+	private static class ViewHolder {
+		public View colorView;
+		public TextView nameView;
+		public TextView countView;
+	}
 }
