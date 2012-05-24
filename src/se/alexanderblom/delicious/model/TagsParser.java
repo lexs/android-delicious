@@ -1,20 +1,17 @@
 package se.alexanderblom.delicious.model;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.util.JsonReader;
 
-import com.google.common.base.Charsets;
-
 public class TagsParser {
 	private JsonReader reader;
 	
-	public TagsParser(InputStream is) {
-		reader = new JsonReader(new InputStreamReader(is, Charsets.UTF_8));
+	public TagsParser(Reader in) {
+		reader = new JsonReader(in);
 	}
 	
 	public List<Tag> getTags() throws IOException {

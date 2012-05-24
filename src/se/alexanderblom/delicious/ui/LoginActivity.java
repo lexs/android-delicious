@@ -1,14 +1,15 @@
 package se.alexanderblom.delicious.ui;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import se.alexanderblom.delicious.Constants;
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.DeliciousApplication;
 import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.fragments.ProgressDialogFragment;
+import se.alexanderblom.delicious.http.BasicAuthentication;
+import se.alexanderblom.delicious.http.Request;
+import se.alexanderblom.delicious.http.Response;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -130,15 +131,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		@Override
 		protected Account doInBackground(Void... params) {
 			try {
-				HttpURLConnection request = (HttpURLConnection) new URL("https://api.del.icio.us/v1/posts/update").openConnection();
-				DeliciousAccount.addAuth(request, username, password);
+				Response response = Request.get("https://api.del.icio.us/v1/posts/update")
+						.addAuth(new BasicAuthentication(username, password))
+						.execute();
 				
 				try {
-					int response = request.getResponseCode();
+					int code = response.getStatusCode();
 					
-					if (response == 200) {
+					if (code == 200) {
 						return createAccount();
-					} else if (response == 401) {
+					} else if (code == 401) {
 						// Unauthorized
 						Log.e(TAG, "401 Unauthorized");
 						
@@ -150,7 +152,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 						return null;
 					}
 				} finally {
-					request.disconnect();
+					response.disconnect();
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "Login failed", e);

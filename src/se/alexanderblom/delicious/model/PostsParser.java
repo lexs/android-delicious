@@ -3,6 +3,7 @@ package se.alexanderblom.delicious.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +27,12 @@ public class PostsParser {
 
 	public PostsParser(InputStream is) {
 		reader = new JsonReader(new InputStreamReader(is, Charsets.UTF_8));
+		
+		dateFormat = new SimpleDateFormat(DATE_FORMAT);
+	}
+	
+	public PostsParser(Reader in) {
+		reader = new JsonReader(in);
 		
 		dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	}

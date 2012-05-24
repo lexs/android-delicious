@@ -1,11 +1,10 @@
 package se.alexanderblom.delicious;
 
-import java.net.HttpURLConnection;
-
+import se.alexanderblom.delicious.http.Authentication;
+import se.alexanderblom.delicious.http.BasicAuthentication;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 
 public class DeliciousAccount {
@@ -36,25 +35,17 @@ public class DeliciousAccount {
 		return get() != null;
 	}
 	
-	public void addAuth(HttpURLConnection urlConnection) {
+	public Authentication getAuth() {
 		Account account = get();
 		if (account == null) {
 			Log.e(TAG, "No account");
-			
-			// TODO: Let application handle this
-			throw new RuntimeException("No account");
+			// Don't add anything, simple let the request fail
+			return null;
 		} else {
 			String username = account.name;
 			String password = accountManager.getPassword(account);
 			
-			addAuth(urlConnection, username, password);
+			return new BasicAuthentication(username, password);
 		}
-	}
-	
-	public static void addAuth(HttpURLConnection urlConnection, String username, String password) {
-		// We do auth ourselves instead of using Authenticator because we don't
-		// want to find ourselves in a loop if credentials are wrong
-		String auth = "Basic " + Base64.encodeToString((username + ":" + password).getBytes(), Base64.DEFAULT);
-		urlConnection.setRequestProperty("Authorization", auth);
 	}
 }

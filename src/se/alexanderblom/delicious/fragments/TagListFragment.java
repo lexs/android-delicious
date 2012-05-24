@@ -1,15 +1,13 @@
 package se.alexanderblom.delicious.fragments;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.adapter.TagsAdapter;
+import se.alexanderblom.delicious.http.Request;
+import se.alexanderblom.delicious.http.Response;
 import se.alexanderblom.delicious.model.Tag;
 import se.alexanderblom.delicious.model.TagsParser;
 import se.alexanderblom.delicious.ui.BaseActivity;
@@ -135,15 +133,14 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		@Override
 		public List<Tag> loadInBackground() {
 			try {
-				HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-				account.addAuth(request);
+				Response response = Request.get(url)
+						.addAuth(account.getAuth())
+						.execute();
 
 				try {
-					InputStream is = request.getInputStream();
-
-					return new TagsParser(new BufferedInputStream(is)).getTags();
+					return new TagsParser(response.getReader()).getTags();
 				} finally {
-					request.disconnect();
+					response.disconnect();
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to fetch posts", e);

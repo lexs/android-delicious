@@ -1,9 +1,9 @@
 package se.alexanderblom.delicious;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
+import se.alexanderblom.delicious.http.Request;
+import se.alexanderblom.delicious.http.Response;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -65,7 +65,7 @@ public class BookmarkService extends IntentService {
 	}
 	
 	private boolean saveBookmark(String link, String title, String notes, String tags, boolean shared) {
-		String uri = Uri.parse("https://api.del.icio.us/v1/posts/add").buildUpon()
+		String url = Uri.parse("https://api.del.icio.us/v1/posts/add").buildUpon()
 				.appendQueryParameter("url", link)
 				.appendQueryParameter("description", title)
 				.appendQueryParameter("extended", notes)
@@ -76,17 +76,16 @@ public class BookmarkService extends IntentService {
 		
 		
 		try {
-			HttpURLConnection request = (HttpURLConnection) new URL(uri).openConnection();
-			
-			// TODO: Handle exception
-			new DeliciousAccount(this).addAuth(request);
+			Response response = Request.get(url)
+					.addAuth(new DeliciousAccount(this).getAuth())
+					.execute();
 			
 			try {
-				int response = request.getResponseCode();
+				int code = response.getStatusCode();
 				
-				if (response == 200) {
+				if (code == 200) {
 					return true;
-				} else if (response == 401) {
+				} else if (code == 401) {
 					// Unauthorized
 					Log.e(TAG, "401 Unauthorized");
 					
@@ -98,7 +97,7 @@ public class BookmarkService extends IntentService {
 					return false;
 				}
 			} finally {
-				request.disconnect();
+				response.disconnect();
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "Error saving bookmark", e);
