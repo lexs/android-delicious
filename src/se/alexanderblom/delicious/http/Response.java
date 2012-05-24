@@ -13,8 +13,6 @@ import org.apache.http.message.BasicHeaderValueParser;
 import org.apache.http.message.HeaderValueParser;
 import org.apache.http.protocol.HTTP;
 
-import se.alexanderblom.delicious.util.ClassUtil;
-
 import com.google.common.io.InputSupplier;
 
 public class Response implements InputSupplier<InputStream> {
@@ -73,8 +71,14 @@ public class Response implements InputSupplier<InputStream> {
 	}
 	
 	public <T> T as(Class<? extends Resource<T>> cl) throws IOException {
-		Resource<T> handler = ClassUtil.newInstance(cl);
-		return handler.get(this);
+		
+		try {
+			Resource<T> handler = cl.newInstance();
+			return handler.get(this);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 
 	public void disconnect() {
