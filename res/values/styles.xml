@@ -6,7 +6,8 @@
 	</style>
 	
 	<style name="Widget.ActionBar.Main" parent="Widget.ActionBar">
-        <item name="android:displayOptions">showHome|showCustom</item>
+        <item name="android:displayOptions">showHome|showCustom|homeAsUp</item>
+        
     </style>
 	
 	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">
@@ -20,6 +21,7 @@
 	
 	<style name="Theme.Delicious.Main" parent="Theme.Delicious">
         <item name="android:actionBarStyle">@style/Widget.ActionBar.Main</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_action_flyout_menu</item>
     </style>
 	
 	<style name="Theme.Delicious.AddBookmark" parent="Theme.Delicious">

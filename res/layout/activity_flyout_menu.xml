@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <LinearLayout
+        android:id="@+id/flyout_menu"
+        android:layout_width="@dimen/flyout_menu_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        android:padding="16dip"
+        android:background="@color/emphasis">
+        
+        <TextView android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="4dip"
+	        android:textAppearance="?android:attr/textAppearanceLargeInverse"
+	        android:text="Recent" />
+        
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLargeInverse"
+            android:text="Tags" />
+        
+    </LinearLayout>
+    
+    <include layout="@layout/activity_main" />
+    
+</FrameLayout>

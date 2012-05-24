@@ -8,6 +8,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
@@ -20,8 +22,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
@@ -32,13 +36,17 @@ public abstract class MainActivity extends BaseActivity {
 	
 	private static final String META_MENU_ID = "menu_id";
 	
+	private Menu menu;
+	private boolean flyoutShown = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_flyout_menu);
 		
 		getActionBar().setCustomView(R.layout.action_bar_navigation);
+		getActionBar().setHomeButtonEnabled(true);
 		setupNavigation();
 
 		if (savedInstanceState == null) {
@@ -68,6 +76,8 @@ public abstract class MainActivity extends BaseActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
+		
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_main, menu);
 
@@ -77,6 +87,15 @@ public abstract class MainActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				if (!flyoutShown) {
+					displayFlyoutMenu();
+				} else {
+					hideFlyoutMenu();
+				}
+				
+				flyoutShown = !flyoutShown;
+				break;
 			case R.id.menu_add:
 				startActivity(new Intent(this, AddBookmarkActivity.class));
 				break;
@@ -106,6 +125,77 @@ public abstract class MainActivity extends BaseActivity {
 				.commit();
 		
 		updateUsername(account);
+	}
+	
+	private void displayFlyoutMenu() {
+		final View flyoutView = findViewById(R.id.flyout_menu);
+		int width = flyoutView.getWidth();
+		
+		flyoutView.setTranslationX(-width);
+		flyoutView.setVisibility(View.VISIBLE);
+		flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		
+		final View containerView = findViewById(R.id.container);
+		containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		
+		flyoutView.animate().translationX(0f).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+			}
+		});
+		
+		containerView.animate().translationX(width).alpha(0.5f).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+			}
+		});
+		
+		containerView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				containerView.setOnTouchListener(null);
+				hideFlyoutMenu();
+				return true;
+			}
+		});
+		
+		getActionBar().getCustomView().setVisibility(View.INVISIBLE);
+		for (int i = 0; i < menu.size(); i++) {
+			MenuItem item = menu.getItem(i);
+			item.setVisible(false);
+		}
+	}
+	
+	private void hideFlyoutMenu() {
+		final View flyoutView = findViewById(R.id.flyout_menu);
+		int width = flyoutView.getWidth();
+		
+		flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		
+		final View containerView = findViewById(R.id.container);
+		containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		
+		flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+				flyoutView.setVisibility(View.INVISIBLE);
+			}
+		});
+		containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+			}
+		});
+		
+		getActionBar().getCustomView().setVisibility(View.VISIBLE);
+		for (int i = 0; i < menu.size(); i++) {
+			MenuItem item = menu.getItem(i);
+			item.setVisible(true);
+		}
 	}
 	
 	private void setupNavigation() {
