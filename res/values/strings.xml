@@ -6,25 +6,21 @@
     <string name="menu_refresh">Refresh</string>
     <string name="field_empty_error">%s can\'t be empty.</string>
     
+    <string name="page_recent">Recent</string>
+    <string name="page_tags">Tags</string>
+    <string name="page_tag">Tag: %s</string>
+    
     <!-- MainActivity -->
     <string name="menu_add">Add link</string>
     <string name="menu_logout">Logout</string>
     
     <string name="menu_title">Menu</string>
-    <string name="menu_recent">Recent</string>
-    <string name="menu_tags">Tags</string>
+
     
     <string name="clipboard_text">Save copied link?</string>
     <string name="clipboard_button">Save</string>
     
     <string name="posts_more_ellipsis">+ %d</string>
-    
-    <!-- PostListActivity -->
-    <string name="page_recent">Recent</string>
-    <string name="page_tag">Tag: %s</string>
-    
-    <!-- TagListActivity -->
-    <string name="page_tags">Tags</string>
     
     <!-- AddBookmarkActivity -->
     <string name="activity_add_bookmark_title">Save link</string>
@@ -41,7 +37,6 @@
     <string name="field_tags_hint">Tags, comma separated</string>
     <string name="field_mark_private">Mark as private</string>
     
-    <string name="toast_bookmark_invalid">Invalid input</string>
     <string name="dialog_saving_message">Saving…</string>
     
     <!-- LoginActivity -->
@@ -57,7 +52,6 @@
     <!-- ConnectionErrorFragment -->
     <string name="dialog_button_retry">Retry</string>
     <string name="dialog_button_cancel">Cancel</string>
-    <string name="dialog_button_more">More</string>
     <string name="dialog_connection_error_title">Connection error</string>
     <string name="dialog_connection_error_message">A network error has occurred. Please check that you
         are connected to the network and try again.</string>

@@ -18,7 +18,7 @@
             style="@style/flyoutItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_recent" />
+            android:text="@string/page_recent" />
 
         <View
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             style="@style/flyoutItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_tags" />
+            android:text="@string/page_tags" />
     </LinearLayout>
 
     <include layout="@layout/activity_container" />

@@ -31,7 +31,7 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 	private TextView clipboardLinkView;
 	
 	private String url;
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -55,10 +55,7 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 			// Just launched, check clipboard
 			checkClipboard();
 		}
-		
-		// We have no ui
-		setUserVisibleHint(false);
-		
+
 		// We don't have any heavy state
 		setRetainInstance(true);
 	}
