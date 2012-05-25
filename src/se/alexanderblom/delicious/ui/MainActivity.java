@@ -4,6 +4,8 @@ import se.alexanderblom.delicious.Constants;
 import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
 import se.alexanderblom.delicious.fragments.ClipboardFragment;
+import se.alexanderblom.delicious.fragments.TagListFragment;
+import se.alexanderblom.delicious.view.InterceptLinearLayout;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -13,12 +15,16 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,8 +33,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 
 public abstract class MainActivity extends BaseActivity {
@@ -36,18 +40,16 @@ public abstract class MainActivity extends BaseActivity {
 	
 	private static final String META_MENU_ID = "menu_id";
 	
-	private Menu menu;
-	private boolean flyoutShown = false;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_flyout_menu);
 		
-		getActionBar().setCustomView(R.layout.action_bar_navigation);
+		//getActionBar().setCustomView(R.layout.action_bar_navigation);
 		getActionBar().setHomeButtonEnabled(true);
-		setupNavigation();
+		//setupNavigation();
+		setupFlyout();
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -76,8 +78,6 @@ public abstract class MainActivity extends BaseActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menu = menu;
-		
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_main, menu);
 
@@ -88,13 +88,16 @@ public abstract class MainActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				if (!flyoutShown) {
+				// TODO: Should be in a separate activity
+				if (getMenuId() != 0) {
 					displayFlyoutMenu();
 				} else {
-					hideFlyoutMenu();
+					Intent intent = new Intent(this, RecentPostsActivity.class)
+							.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					
+					startActivity(intent);
+					finish();
 				}
-				
-				flyoutShown = !flyoutShown;
 				break;
 			case R.id.menu_add:
 				startActivity(new Intent(this, AddBookmarkActivity.class));
@@ -110,16 +113,9 @@ public abstract class MainActivity extends BaseActivity {
 	}
 
 	@Override
-	protected void onTitleChanged(CharSequence title, int color) {
-		super.onTitleChanged(title, color);
-		
-		TextView titleView = (TextView) getActionBar().getCustomView().findViewById(R.id.page_title);
-		titleView.setText(title);
-	}
-	
-	@Override
 	protected void accountChanged(DeliciousAccount account) {
 		// Just replace our old fragment, this works when an error is shown too
+		// TODO: Will this work?
 		getFragmentManager().beginTransaction()
 				.replace(R.id.content, createFragment())
 				.commit();
@@ -127,18 +123,45 @@ public abstract class MainActivity extends BaseActivity {
 		updateUsername(account);
 	}
 	
+	private ActionMode actionMode = null;
+	private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+		
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+		
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			hideFlyoutMenu();
+			actionMode = null;
+		}
+		
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mode.setTitle("Menu");
+			return true;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	};
+	
 	private void displayFlyoutMenu() {
 		final View flyoutView = findViewById(R.id.flyout_menu);
-		int width = flyoutView.getWidth();
-		
-		flyoutView.setTranslationX(-width);
-		flyoutView.setVisibility(View.VISIBLE);
-		flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-		
 		final View containerView = findViewById(R.id.container);
-		containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 		
+		int width = flyoutView.getWidth();
 		flyoutView.animate().translationX(0f).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+				flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+				flyoutView.setVisibility(View.VISIBLE);
+			}
+			
 			@Override
 			public void onAnimationEnd(Animator animation) {
 				flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
@@ -161,23 +184,20 @@ public abstract class MainActivity extends BaseActivity {
 			}
 		});
 		
-		getActionBar().getCustomView().setVisibility(View.INVISIBLE);
-		for (int i = 0; i < menu.size(); i++) {
-			MenuItem item = menu.getItem(i);
-			item.setVisible(false);
-		}
+		actionMode = startActionMode(actionModeCallback);
 	}
 	
 	private void hideFlyoutMenu() {
 		final View flyoutView = findViewById(R.id.flyout_menu);
-		int width = flyoutView.getWidth();
-		
-		flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-		
 		final View containerView = findViewById(R.id.container);
-		containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-		
+
+		int width = flyoutView.getWidth();
 		flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+				flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+			}
+			
 			@Override
 			public void onAnimationEnd(Animator animation) {
 				flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
@@ -186,56 +206,84 @@ public abstract class MainActivity extends BaseActivity {
 		});
 		containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
 			@Override
+			public void onAnimationStart(Animator animation) {
+				containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+			}
+			
+			@Override
 			public void onAnimationEnd(Animator animation) {
 				containerView.setLayerType(View.LAYER_TYPE_NONE, null);
 			}
 		});
-		
-		getActionBar().getCustomView().setVisibility(View.VISIBLE);
-		for (int i = 0; i < menu.size(); i++) {
-			MenuItem item = menu.getItem(i);
-			item.setVisible(true);
-		}
 	}
 	
-	private void setupNavigation() {
-		View v = getActionBar().getCustomView();
-		final PopupMenu menu = new PopupMenu(this, v);
-		menu.inflate(R.menu.menu_navigation);
-		
-		// Check if we should hide any option
+	private void setupFlyout() {
 		int menuId = getMenuId();
-		if (menuId != 0) {
-			// Hide item
-			menu.getMenu().findItem(menuId).setVisible(false);
+		
+		if (menuId == 0) {
+			// No flyout menu
+			return;
 		}
 		
-		menu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				int id = item.getItemId();
-				switch (id) {
-					case R.id.menu_recent:
-						Intent recent = new Intent(MainActivity.this, RecentPostsActivity.class)
-								.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						
-						startActivity(recent);
-						break;
-					case R.id.menu_tags:
-						startActivity(new Intent(MainActivity.this, TagListActivity.class));
-						break;
-					default:
-						return false;
-				}
-				
-				return true;
-			}
-		});
-		
-		v.setOnClickListener(new OnClickListener() {
+		OnClickListener onClick = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				menu.show();
+				final int id = v.getId();
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						switch (id) {
+						case R.id.menu_recent:
+							getFragmentManager().popBackStack("tag", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+							/*Intent recent = new Intent(MainActivity.this, RecentPostsActivity.class)
+									.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+									.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							
+							startActivity(recent);*/
+							break;
+						case R.id.menu_tags:
+							/*startActivity(new Intent(MainActivity.this, TagListActivity.class)
+									.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));*/
+							getFragmentManager().beginTransaction()
+									.replace(R.id.content, new TagListFragment())
+									.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+									.addToBackStack("tag")
+									.commit();
+							break;
+					}
+					}
+				}, 300);
+				
+				if (actionMode != null) {
+					actionMode.finish();
+				}
+				//hideFlyoutMenu();
+			}
+		};
+		
+		View flyoutView = findViewById(R.id.flyout_menu);
+		TextView recentView = (TextView) flyoutView.findViewById(R.id.menu_recent);
+		TextView tagsView = (TextView) flyoutView.findViewById(R.id.menu_tags);
+		
+		recentView.setOnClickListener(onClick);
+		tagsView.setOnClickListener(onClick);
+		
+		if (menuId == R.id.menu_recent) {
+			recentView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
+		} else if (menuId == R.id.menu_tags) {
+			tagsView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
+		}
+		
+		final InterceptLinearLayout interceptView = (InterceptLinearLayout) findViewById(R.id.container);
+		interceptView.setOnInterceptListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (actionMode != null) {
+					actionMode.finish();
+					
+					return true;
+				} else {
+					return false;
+				}
 			}
 		});
 	}
@@ -256,8 +304,7 @@ public abstract class MainActivity extends BaseActivity {
 	}
 
 	private void updateUsername(DeliciousAccount account) {
-		TextView usernameView = (TextView) getActionBar().getCustomView().findViewById(R.id.username);
-		usernameView.setText(account.getUsername());
+		getActionBar().setSubtitle(account.getUsername());
 	}
 
 	private void logout() {

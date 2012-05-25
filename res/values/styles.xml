@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<style name="Widget.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
-		<item name="android:displayOptions">showTitle|showHome</item>
+		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 		<item name="android:background">@color/emphasis</item>
 	</style>
 	
-	<style name="Widget.ActionBar.Main" parent="Widget.ActionBar">
-        <item name="android:displayOptions">showHome|showCustom|homeAsUp</item>
+<!-- 	<style name="Widget.ActionBar.Flyout" parent="Widget.ActionBar">
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item> 
         
-    </style>
+    </style>-->
 	
 	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">
 	    <item name="android:displayOptions">showTitle|showHome|homeAsUp</item>
@@ -19,8 +19,8 @@
 		<item name="android:actionBarStyle">@style/Widget.ActionBar</item>
 	</style>
 	
-	<style name="Theme.Delicious.Main" parent="Theme.Delicious">
-        <item name="android:actionBarStyle">@style/Widget.ActionBar.Main</item>
+	<style name="Theme.Delicious.Flyout" parent="Theme.Delicious">
+        <item name="android:actionBarStyle">@style/Widget.ActionBar</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_action_flyout_menu</item>
     </style>
 	
