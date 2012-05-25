@@ -1,109 +1,60 @@
 package se.alexanderblom.delicious.ui;
 
-import se.alexanderblom.delicious.Constants;
-import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
-import se.alexanderblom.delicious.fragments.ClipboardFragment;
+import se.alexanderblom.delicious.fragments.PostListFragment;
 import se.alexanderblom.delicious.fragments.TagListFragment;
 import se.alexanderblom.delicious.view.InterceptLinearLayout;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
+import se.alexanderblom.delicious.view.InterceptLinearLayout.OnInterceptListener;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.LayoutTransition;
-import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-public abstract class MainActivity extends BaseActivity {
-	private static final String TAG = "MainActivity";
-	
+public class MainActivity extends ContainerActivity {
+	private static final String TAG_LIST = "tag_list";
 	private static final String META_MENU_ID = "menu_id";
+	
+	private ActionMode.Callback flyoutMenuCallback;
+	private ActionMode actionMode = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setContentView(R.layout.activity_flyout_menu);
 		
-		//getActionBar().setCustomView(R.layout.action_bar_navigation);
-		getActionBar().setHomeButtonEnabled(true);
-		//setupNavigation();
+		flyoutMenuCallback = new FlyoutActionModeCallback();
+
 		setupFlyout();
-
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(new ClipboardFragment(), ClipboardFragment.TAG)
-					.add(R.id.content, createFragment())
-					.commit();
-		}
-		
-		ViewGroup container = (ViewGroup) findViewById(R.id.container);
-		LayoutTransition transition = new LayoutTransition();
-
-		transition.setStartDelay(LayoutTransition.APPEARING, 0);
-		transition.setStartDelay(LayoutTransition.CHANGE_APPEARING, 0);
-		transition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, 0);
-		transition.setStartDelay(LayoutTransition.DISAPPEARING, 0);
-		
-		ObjectAnimator animator = ObjectAnimator.ofFloat(null, View.ALPHA, 1f, 0f);
-		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
-		
-		container.setLayoutTransition(transition);
-		
-		updateUsername(getAccount());
 	}
 	
-	protected abstract Fragment createFragment();
+	@Override
+	protected int getContentResource() {
+		return R.layout.activity_main;
+	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_main, menu);
-
-		return super.onCreateOptionsMenu(menu);
+	protected Fragment createFragment(Bundle savedInstanceState) {
+		return PostListFragment.newInstance(null);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				// TODO: Should be in a separate activity
-				if (getMenuId() != 0) {
-					displayFlyoutMenu();
-				} else {
-					Intent intent = new Intent(this, RecentPostsActivity.class)
-							.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					
-					startActivity(intent);
-					finish();
-				}
-				break;
-			case R.id.menu_add:
-				startActivity(new Intent(this, AddBookmarkActivity.class));
-				break;
-			case R.id.menu_logout:
-				logout();
+				showFlyoutMenu();
 				break;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -111,110 +62,18 @@ public abstract class MainActivity extends BaseActivity {
 		
 		return true;
 	}
-
-	@Override
-	protected void accountChanged(DeliciousAccount account) {
-		// Just replace our old fragment, this works when an error is shown too
-		// TODO: Will this work?
-		getFragmentManager().beginTransaction()
-				.replace(R.id.content, createFragment())
-				.commit();
-		
-		updateUsername(account);
-	}
 	
-	private ActionMode actionMode = null;
-	private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
-		
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false;
+	public void showFlyoutMenu() {
+		if (actionMode == null) {
+			actionMode = startActionMode(flyoutMenuCallback);
 		}
-		
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			hideFlyoutMenu();
+	}
+
+	public void hideFlyoutMenu() {
+		if (actionMode != null) {
+			actionMode.finish();
 			actionMode = null;
 		}
-		
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			mode.setTitle("Menu");
-			return true;
-		}
-		
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-	};
-	
-	private void displayFlyoutMenu() {
-		final View flyoutView = findViewById(R.id.flyout_menu);
-		final View containerView = findViewById(R.id.container);
-		
-		int width = flyoutView.getWidth();
-		flyoutView.animate().translationX(0f).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationStart(Animator animation) {
-				flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-				flyoutView.setVisibility(View.VISIBLE);
-			}
-			
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
-			}
-		});
-		
-		containerView.animate().translationX(width).alpha(0.5f).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				containerView.setLayerType(View.LAYER_TYPE_NONE, null);
-			}
-		});
-		
-		containerView.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				containerView.setOnTouchListener(null);
-				hideFlyoutMenu();
-				return true;
-			}
-		});
-		
-		actionMode = startActionMode(actionModeCallback);
-	}
-	
-	private void hideFlyoutMenu() {
-		final View flyoutView = findViewById(R.id.flyout_menu);
-		final View containerView = findViewById(R.id.container);
-
-		int width = flyoutView.getWidth();
-		flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationStart(Animator animation) {
-				flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-			}
-			
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
-				flyoutView.setVisibility(View.INVISIBLE);
-			}
-		});
-		containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationStart(Animator animation) {
-				containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-			}
-			
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				containerView.setLayerType(View.LAYER_TYPE_NONE, null);
-			}
-		});
 	}
 	
 	private void setupFlyout() {
@@ -233,21 +92,19 @@ public abstract class MainActivity extends BaseActivity {
 					public void run() {
 						switch (id) {
 						case R.id.menu_recent:
-							getFragmentManager().popBackStack("tag", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-							/*Intent recent = new Intent(MainActivity.this, RecentPostsActivity.class)
-									.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-									.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							
-							startActivity(recent);*/
+							getFragmentManager().popBackStack(TAG_LIST, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 							break;
 						case R.id.menu_tags:
-							/*startActivity(new Intent(MainActivity.this, TagListActivity.class)
-									.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));*/
-							getFragmentManager().beginTransaction()
-									.replace(R.id.content, new TagListFragment())
-									.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-									.addToBackStack("tag")
-									.commit();
+							FragmentManager fm = getFragmentManager();
+							if (!fm.popBackStackImmediate(TAG_LIST, 0)
+									&& fm.findFragmentByTag(TAG_LIST) == null) {
+								// Only add tag list if we can't find it
+								fm.beginTransaction()
+										.replace(R.id.content, new TagListFragment(), TAG_LIST)
+										.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+										.addToBackStack(TAG_LIST)
+										.commit();
+							}
 							break;
 					}
 					}
@@ -274,16 +131,20 @@ public abstract class MainActivity extends BaseActivity {
 		}
 		
 		final InterceptLinearLayout interceptView = (InterceptLinearLayout) findViewById(R.id.container);
-		interceptView.setOnInterceptListener(new OnTouchListener() {
+		interceptView.setOnInterceptListener(new OnInterceptListener() {
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (actionMode != null) {
-					actionMode.finish();
-					
-					return true;
-				} else {
-					return false;
-				}
+			public boolean isFlyoutOpen() {
+				return actionMode != null;
+			}
+			
+			@Override
+			public void shouldOpen() {
+				showFlyoutMenu();
+			}
+			
+			@Override
+			public void shouldClose() {
+				hideFlyoutMenu();
 			}
 		});
 	}
@@ -303,34 +164,106 @@ public abstract class MainActivity extends BaseActivity {
 		
 	}
 
-	private void updateUsername(DeliciousAccount account) {
-		getActionBar().setSubtitle(account.getUsername());
-	}
+	private class FlyoutActionModeCallback implements ActionMode.Callback {
+		private static final float ALPHA = 0.6f;
+		
+		private Paint contentPaint;
+		
+		public FlyoutActionModeCallback() {
+			contentPaint = new Paint();
 
-	private void logout() {
-		Log.d(TAG, "Removing account");
+			// This will desaturate colors
+			float[] transform = {
+				1, 0, 0, 0, 0, 
+				0, 1, 0, 0, 0,
+				0, 0, 1, 0, 0, 
+				0, 0, 0, 1, 0
+			};
+			ColorMatrixColorFilter filter = new ColorMatrixColorFilter(transform);
+			//colorMatrix.setSaturation(0f); // Remove Colour
+
+			contentPaint.setColorFilter(filter);
+			//PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(0x3300aa00, PorterDuff.Mode.SRC_OVER);
+			//contentPaint.setColorFilter(colorFilter);
+		}
 		
-		AccountManager accountManager = AccountManager.get(this);
-		Account accounts[] = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
-		Account account = accounts[0];
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
 		
-		// Callback to wait for the account to actually be removed
-		AccountManagerCallback<Boolean> callback = new AccountManagerCallback<Boolean>() {
-			@Override
-			public void run(AccountManagerFuture<Boolean> future) {
-				try {
-					if (future.getResult()) {
-						checkAccount();
-					} else {
-						// Could not remove account, should not happen
-						Log.e(TAG, "Could not remove account");
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error fetching remove account result", e);
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			final View flyoutView = findViewById(R.id.flyout_menu);
+			final View containerView = findViewById(R.id.container);
+
+			int width = flyoutView.getWidth();
+			flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 				}
-			}
-		};
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+					flyoutView.setVisibility(View.INVISIBLE);
+				}
+			});
+			containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					containerView.setLayerType(View.LAYER_TYPE_HARDWARE, contentPaint);
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+				}
+			});
+			
+			actionMode = null;
+		}
 		
-		accountManager.removeAccount(account, callback, null);
-	}
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mode.setTitle(R.string.menu_title);
+
+			final View flyoutView = findViewById(R.id.flyout_menu);
+			final View containerView = findViewById(R.id.container);
+			
+			int width = flyoutView.getWidth();
+			flyoutView.animate().translationX(0f).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+					flyoutView.setVisibility(View.VISIBLE);
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+				}
+			});
+			
+			containerView.animate().translationX(width).alpha(ALPHA).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					containerView.setLayerType(View.LAYER_TYPE_HARDWARE, contentPaint);
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					//containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+				}
+			});
+			
+			return true;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			return false;
+		}
+	};
 }

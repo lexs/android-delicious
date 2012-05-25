@@ -4,12 +4,7 @@
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 		<item name="android:background">@color/emphasis</item>
 	</style>
-	
-<!-- 	<style name="Widget.ActionBar.Flyout" parent="Widget.ActionBar">
-        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item> 
-        
-    </style>-->
-	
+
 	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">
 	    <item name="android:displayOptions">showTitle|showHome|homeAsUp</item>
 		<item name="android:title">@string/activity_add_bookmark_title</item>
@@ -19,13 +14,12 @@
 		<item name="android:actionBarStyle">@style/Widget.ActionBar</item>
 	</style>
 	
-	<style name="Theme.Delicious.Flyout" parent="Theme.Delicious">
+	<style name="Theme.Delicious.Main" parent="Theme.Delicious">
         <item name="android:actionBarStyle">@style/Widget.ActionBar</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_action_flyout_menu</item>
     </style>
 	
 	<style name="Theme.Delicious.AddBookmark" parent="Theme.Delicious">
-	    <item name="android:title">@string/activity_add_bookmark_title</item>
 		<item name="android:actionBarStyle">@style/Widget.ActionBar.AddBookmark</item>
 	</style>
 	
@@ -50,24 +44,16 @@
 	    <item name="android:layout_marginRight">4dip</item>
 	    <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
 	</style>
-	
-	 <!-- TextView style with blue underline. It is most suitable for headers.
 
-         This is similar to ?android:attr/listSeparatorTextView but uses different
-         background and text color. See also android:style/Widget.Holo.TextView.ListSeparator
-         (which is private, so we cannot specify it as a parent style).  -->
-    <!-- <style name="ContactListSeparatorTextViewStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">@dimen/list_section_divider_min_height</item>
-        <item name="android:background">@drawable/list_section_divider_holo_custom</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/people_app_theme_color</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">8dip</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textAllCaps">true</item>
-    </style> -->
+	<style name="flyoutItem" parent="android:Widget.Holo.TextView">
+		<item name="android:background">?android:attr/selectableItemBackground</item>
+		<item name="android:drawablePadding">8dip</item>
+		<item name="android:gravity">center_vertical</item>
+		<item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
+		<item name="android:paddingBottom">4dip</item>
+		<item name="android:paddingLeft">16dip</item>
+		<item name="android:paddingRight">8dip</item>
+		<item name="android:paddingTop">4dip</item>
+		<item name="android:textAppearance">?android:attr/textAppearanceMediumInverse</item>
+	</style>
 </resources>

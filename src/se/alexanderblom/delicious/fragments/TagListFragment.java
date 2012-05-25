@@ -39,6 +39,8 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		getActivity().setTitle(R.string.page_tags);
+		
 		account = new DeliciousAccount(getActivity());
 		adapter = new TagsAdapter(getActivity());
 		

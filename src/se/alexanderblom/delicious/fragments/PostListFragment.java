@@ -28,24 +28,27 @@ import android.widget.ListView;
 
 public class PostListFragment extends ListFragment implements LoaderCallbacks<List<Post>> {
 	private static final String TAG = "PostListFragment";
+	
+	private static final String RECENTS_URL = "https://api.del.icio.us/v1/json/posts/recent";
 
-	private static final String ARG_URL = "url";
+	private static final String ARG_TAG = "tag";
 	private static final int POSTS_LOADER = 1;
 
 	private DeliciousAccount deliciousAccount;
-
 	private PostsAdapter adapter;
 	
-	public static PostListFragment newInstance(String url) {
+	private String tag;
+	
+	public static PostListFragment newInstance(String tag) {
 		PostListFragment f = new PostListFragment();
-		f.setArguments(createArgs(url));
+		f.setArguments(createArgs(tag));
 		
 		return f;
 	}
 	
-	public static Bundle createArgs(String url) {
+	public static Bundle createArgs(String tag) {
 		Bundle args = new Bundle();
-		args.putString(ARG_URL, url);
+		args.putString(ARG_TAG, tag);
 		
 		return args;
 	}
@@ -53,6 +56,9 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Bundle args = getArguments() != null ? getArguments() : Bundle.EMPTY;
+		tag = args.getString(ARG_TAG);
 		
 		deliciousAccount = new DeliciousAccount(getActivity());
 		adapter = new PostsAdapter(getActivity());
@@ -69,6 +75,17 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 		if (activity.hasAccount()) {
 			setListShown(false);
 			getLoaderManager().initLoader(POSTS_LOADER, null, this);
+		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		if (tag != null) {
+			getActivity().setTitle(getString(R.string.page_tag, tag));
+		} else {
+			getActivity().setTitle(R.string.page_recent);
 		}
 	}
 
@@ -101,7 +118,13 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 
 	@Override
 	public Loader<List<Post>> onCreateLoader(int id, Bundle args) {
-		String url = getArguments().getString(ARG_URL);
+		String url = RECENTS_URL;
+		if (tag != null) {
+			url = Uri.parse("https://api.del.icio.us/v1/json/posts/all").buildUpon()
+					.appendQueryParameter("tag", tag)
+					.build()
+					.toString();
+		} 
 		
 		setListShown(false);
 		return new PostsLoader(getActivity(), deliciousAccount, url);
