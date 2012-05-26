@@ -29,9 +29,7 @@ public abstract class ContainerActivity extends BaseActivity {
 
 		setContentView(getContentResource());
 		
-		//getActionBar().setCustomView(R.layout.action_bar_navigation);
 		getActionBar().setHomeButtonEnabled(true);
-		//setupNavigation();
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()

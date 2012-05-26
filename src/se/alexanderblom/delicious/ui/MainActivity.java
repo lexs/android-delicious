@@ -113,7 +113,6 @@ public class MainActivity extends ContainerActivity {
 				if (actionMode != null) {
 					actionMode.finish();
 				}
-				//hideFlyoutMenu();
 			}
 		};
 		
@@ -179,50 +178,14 @@ public class MainActivity extends ContainerActivity {
 				0, 0, 1, 0, 0, 
 				0, 0, 0, 1, 0
 			};
+			
 			ColorMatrixColorFilter filter = new ColorMatrixColorFilter(transform);
-			//colorMatrix.setSaturation(0f); // Remove Colour
-
 			contentPaint.setColorFilter(filter);
-			//PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(0x3300aa00, PorterDuff.Mode.SRC_OVER);
-			//contentPaint.setColorFilter(colorFilter);
 		}
 		
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 			return false;
-		}
-		
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			final View flyoutView = findViewById(R.id.flyout_menu);
-			final View containerView = findViewById(R.id.container);
-
-			int width = flyoutView.getWidth();
-			flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationStart(Animator animation) {
-					flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-				}
-				
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
-					flyoutView.setVisibility(View.INVISIBLE);
-				}
-			});
-			containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationStart(Animator animation) {
-					containerView.setLayerType(View.LAYER_TYPE_HARDWARE, contentPaint);
-				}
-				
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					containerView.setLayerType(View.LAYER_TYPE_NONE, null);
-				}
-			});
-			
-			actionMode = null;
 		}
 		
 		@Override
@@ -251,14 +214,38 @@ public class MainActivity extends ContainerActivity {
 				public void onAnimationStart(Animator animation) {
 					containerView.setLayerType(View.LAYER_TYPE_HARDWARE, contentPaint);
 				}
-				
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					//containerView.setLayerType(View.LAYER_TYPE_NONE, null);
-				}
 			});
 			
 			return true;
+		}
+		
+		
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			final View flyoutView = findViewById(R.id.flyout_menu);
+			final View containerView = findViewById(R.id.container);
+
+			int width = flyoutView.getWidth();
+			flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+					flyoutView.setVisibility(View.INVISIBLE);
+				}
+			});
+			containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+				}
+			});
+			
+			actionMode = null;
 		}
 		
 		@Override
