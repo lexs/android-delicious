@@ -10,9 +10,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -21,22 +18,18 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class MainActivity extends ContainerActivity {
 	private static final String TAG_LIST = "tag_list";
-	private static final String META_MENU_ID = "menu_id";
 	
-	private ActionMode.Callback flyoutMenuCallback;
+	private FlyoutActionModeCallback flyoutMenuCallback;
 	private ActionMode actionMode = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		flyoutMenuCallback = new FlyoutActionModeCallback();
-
 		setupFlyout();
 	}
 	
@@ -92,51 +85,14 @@ public class MainActivity extends ContainerActivity {
 	}
 	
 	private void setupFlyout() {
-		int menuId = getMenuId();
-		
-		if (menuId == 0) {
-			// No flyout menu
-			return;
-		}
-		
-		OnClickListener onClick = new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				final int id = v.getId();
-				new Handler().postDelayed(new Runnable() {
-					public void run() {
-						switch (id) {
-						case R.id.menu_recent:
-							getFragmentManager().popBackStack(TAG_LIST, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-							break;
-						case R.id.menu_tags:
-							FragmentManager fm = getFragmentManager();
-							if (!fm.popBackStackImmediate(TAG_LIST, 0)
-									&& fm.findFragmentByTag(TAG_LIST) == null) {
-								// Only add tag list if we can't find it
-								fm.beginTransaction()
-										.replace(R.id.content, new TagListFragment(), TAG_LIST)
-										.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-										.addToBackStack(TAG_LIST)
-										.commit();
-							}
-							break;
-					}
-					}
-				}, 300);
-				
-				if (actionMode != null) {
-					actionMode.finish();
-				}
-			}
-		};
+		flyoutMenuCallback = new FlyoutActionModeCallback();
 		
 		View flyoutView = findViewById(R.id.flyout_menu);
 		TextView recentView = (TextView) flyoutView.findViewById(R.id.menu_recent);
 		TextView tagsView = (TextView) flyoutView.findViewById(R.id.menu_tags);
 		
-		recentView.setOnClickListener(onClick);
-		tagsView.setOnClickListener(onClick);
+		recentView.setOnClickListener(flyoutMenuCallback);
+		tagsView.setOnClickListener(flyoutMenuCallback);
 
 		final InterceptLinearLayout interceptView = (InterceptLinearLayout) findViewById(R.id.container);
 		interceptView.setOnInterceptListener(new OnInterceptListener() {
@@ -156,28 +112,15 @@ public class MainActivity extends ContainerActivity {
 			}
 		});
 	}
-	
-	private int getMenuId() {
-		try {
-			ActivityInfo ai = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
-			
-			if (ai.metaData != null) {
-				return ai.metaData.getInt(META_MENU_ID, 0);
-			} else {
-				return 0;
-			}
-		} catch (NameNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		
-	}
 
-	private class FlyoutActionModeCallback implements ActionMode.Callback {
+	private class FlyoutActionModeCallback implements ActionMode.Callback, View.OnClickListener {
 		private static final float ALPHA = 0.6f;
 		
+		private Handler handler;
 		private Paint contentPaint;
 		
 		public FlyoutActionModeCallback() {
+			handler = new Handler();
 			contentPaint = new Paint();
 
 			// This will desaturate colors
@@ -260,6 +203,48 @@ public class MainActivity extends ContainerActivity {
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 			return false;
+		}
+
+		/**
+		 * Called when the user clicks a flyout menu option
+		 */
+		@Override
+		public void onClick(View v) {
+			int id = v.getId();
+			handler.postDelayed(new PageSwitcher(id), 300);
+			
+			if (actionMode != null) {
+				actionMode.finish();
+			}
+		}
+		
+		private class PageSwitcher implements Runnable {
+			private int id;
+			
+			public PageSwitcher(int id) {
+				this.id = id;
+			}
+
+			@Override
+			public void run() {
+				switch (id) {
+					case R.id.menu_recent:
+						getFragmentManager().popBackStack(TAG_LIST, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+						break;
+					case R.id.menu_tags:
+						FragmentManager fm = getFragmentManager();
+						if (!fm.popBackStackImmediate(TAG_LIST, 0)
+								&& fm.findFragmentByTag(TAG_LIST) == null) {
+							// Only add tag list if we can't find it
+							fm.beginTransaction()
+									.replace(R.id.content, new TagListFragment(), TAG_LIST)
+									.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+									.addToBackStack(TAG_LIST)
+									.commit();
+						}
+						break;
+				}
+			}
 		}
 	};
 }
