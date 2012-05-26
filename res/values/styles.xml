@@ -5,9 +5,8 @@
 		<item name="android:background">@color/emphasis</item>
 	</style>
 
-	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">
-	    <item name="android:displayOptions">showTitle|showHome|homeAsUp</item>
-		<item name="android:title">@string/activity_add_bookmark_title</item>
+	<style name="Widget.ActionBar.Login" parent="Widget.ActionBar">
+	    <item name="android:displayOptions">showTitle|showHome</item>
 	</style>
 
 	<style name="Theme.Delicious" parent="android:Theme.Holo.Light.DarkActionBar">
@@ -19,8 +18,8 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_action_flyout_menu</item>
     </style>
 	
-	<style name="Theme.Delicious.AddBookmark" parent="Theme.Delicious">
-		<item name="android:actionBarStyle">@style/Widget.ActionBar.AddBookmark</item>
+	<style name="Theme.Delicious.Login" parent="Theme.Delicious">
+		<item name="android:actionBarStyle">@style/Widget.ActionBar.Login</item>
 	</style>
 	
 	<style name="sectionHeader" parent="android:Widget.Holo.Light.TextView">
