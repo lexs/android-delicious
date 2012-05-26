@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="TextAppearance.SubtitleTextStyle" parent="android:TextAppearance.Holo.Widget.ActionBar.Subtitle">
-        <item name="android:textColor">?android:attr/textColorSecondaryInverse</item>
-    </style>
-    
 	<style name="Widget.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 		<item name="android:background">@color/emphasis</item>
-		<item name="android:subtitleTextStyle">@style/TextAppearance.SubtitleTextStyle</item>
 	</style>
 
 	<style name="Widget.ActionBar.AddBookmark" parent="Widget.ActionBar">

@@ -52,8 +52,6 @@ public abstract class ContainerActivity extends BaseActivity {
 		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
 		
 		container.setLayoutTransition(transition);
-		
-		updateUsername(getAccount());
 	}
 	
 	@Override
@@ -95,8 +93,6 @@ public abstract class ContainerActivity extends BaseActivity {
 		getFragmentManager().beginTransaction()
 				.replace(R.id.content, createFragment(null))
 				.commit();
-		
-		updateUsername(account);
 	}
 	
 	protected int getContentResource() {
@@ -104,10 +100,6 @@ public abstract class ContainerActivity extends BaseActivity {
 	}
 	
 	protected abstract Fragment createFragment(Bundle savedInstanceState);
-	
-	private void updateUsername(DeliciousAccount account) {
-		getActionBar().setSubtitle(account.getUsername());
-	}
 	
 	private void logout() {
 		Log.d(TAG, "Removing account");
