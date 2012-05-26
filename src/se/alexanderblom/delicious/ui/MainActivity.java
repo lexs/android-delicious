@@ -69,17 +69,17 @@ public class MainActivity extends ContainerActivity {
 		}
 	}
 	
-	public void setSelectedItem(int id) {
+	public void setSelectedPage(int id) {
 		View flyoutView = findViewById(R.id.flyout_menu);
-		TextView recentView = (TextView) flyoutView.findViewById(R.id.menu_recent);
-		TextView tagsView = (TextView) flyoutView.findViewById(R.id.menu_tags);
+		TextView recentView = (TextView) flyoutView.findViewById(R.id.page_recent);
+		TextView tagsView = (TextView) flyoutView.findViewById(R.id.page_tags);
 		
 		recentView.setCompoundDrawables(null, null, null, null);
 		tagsView.setCompoundDrawables(null, null, null, null);
 		
-		if (id == R.id.menu_recent) {
+		if (id == R.id.page_recent) {
 			recentView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
-		} else if (id == R.id.menu_tags) {
+		} else if (id == R.id.page_tags) {
 			tagsView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
 		}
 	}
@@ -88,8 +88,8 @@ public class MainActivity extends ContainerActivity {
 		flyoutMenuCallback = new FlyoutActionModeCallback();
 		
 		View flyoutView = findViewById(R.id.flyout_menu);
-		TextView recentView = (TextView) flyoutView.findViewById(R.id.menu_recent);
-		TextView tagsView = (TextView) flyoutView.findViewById(R.id.menu_tags);
+		TextView recentView = (TextView) flyoutView.findViewById(R.id.page_recent);
+		TextView tagsView = (TextView) flyoutView.findViewById(R.id.page_tags);
 		
 		recentView.setOnClickListener(flyoutMenuCallback);
 		tagsView.setOnClickListener(flyoutMenuCallback);
@@ -171,7 +171,6 @@ public class MainActivity extends ContainerActivity {
 			return true;
 		}
 		
-		
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
 			final View flyoutView = findViewById(R.id.flyout_menu);
@@ -228,10 +227,10 @@ public class MainActivity extends ContainerActivity {
 			@Override
 			public void run() {
 				switch (id) {
-					case R.id.menu_recent:
+					case R.id.page_recent:
 						getFragmentManager().popBackStack(TAG_LIST, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 						break;
-					case R.id.menu_tags:
+					case R.id.page_tags:
 						FragmentManager fm = getFragmentManager();
 						if (!fm.popBackStackImmediate(TAG_LIST, 0)
 								&& fm.findFragmentByTag(TAG_LIST) == null) {
@@ -246,5 +245,5 @@ public class MainActivity extends ContainerActivity {
 				}
 			}
 		}
-	};
+	}
 }

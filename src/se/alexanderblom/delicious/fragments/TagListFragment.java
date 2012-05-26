@@ -68,7 +68,7 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		
 		if (activity instanceof MainActivity) {
 			MainActivity main = (MainActivity) activity;
-			main.setSelectedItem(R.id.menu_tags);
+			main.setSelectedPage(R.id.page_tags);
 		}
 	}
 	

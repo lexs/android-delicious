@@ -14,7 +14,7 @@
         android:visibility="invisible" >
 
         <TextView
-            android:id="@+id/menu_recent"
+            android:id="@+id/page_recent"
             style="@style/flyoutItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
             android:background="@color/emphasis_light" />
 
         <TextView
-            android:id="@+id/menu_tags"
+            android:id="@+id/page_tags"
             style="@style/flyoutItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

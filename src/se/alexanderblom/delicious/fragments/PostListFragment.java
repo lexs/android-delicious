@@ -93,7 +93,7 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 		
 		if (tag == null && activity instanceof MainActivity) {
 			MainActivity main = (MainActivity) activity;
-			main.setSelectedItem(R.id.menu_recent);
+			main.setSelectedPage(R.id.page_recent);
 		}
 	}
 
