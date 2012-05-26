@@ -11,7 +11,7 @@ import android.util.Log;
  * has added an account and if necessary asking the user to
  * do so.
  */
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
 	private static final String TAG = "BaseActivity";
 	
 	private static final int REQUEST_LOGIN = 1;

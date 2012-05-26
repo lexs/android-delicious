@@ -11,8 +11,10 @@ import se.alexanderblom.delicious.http.Response;
 import se.alexanderblom.delicious.model.Tag;
 import se.alexanderblom.delicious.model.TagsParser;
 import se.alexanderblom.delicious.ui.BaseActivity;
+import se.alexanderblom.delicious.ui.MainActivity;
 import se.alexanderblom.delicious.ui.PostListActivity;
 import se.alexanderblom.delicious.util.AsyncLoader;
+import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
@@ -54,6 +56,19 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		if (activity.hasAccount()) {
 			setListShown(false);
 			getLoaderManager().initLoader(TAGS_LOADER, null, this);
+		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		Activity activity = getActivity();
+		activity.setTitle(R.string.page_tags);
+		
+		if (activity instanceof MainActivity) {
+			MainActivity main = (MainActivity) activity;
+			main.setSelectedPage(R.id.page_tags);
 		}
 	}
 	

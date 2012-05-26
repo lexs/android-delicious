@@ -1,14 +1,13 @@
 package se.alexanderblom.delicious.helpers;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import se.alexanderblom.delicious.R;
+import se.alexanderblom.delicious.http.Request;
+import se.alexanderblom.delicious.http.Response;
+import se.alexanderblom.delicious.http.resource.StringResource;
 import se.alexanderblom.delicious.util.AbstractTextWatcher;
 import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.Activity;
@@ -27,9 +26,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 
 public class TitleFetcher implements LoaderCallbacks<String> {
 	private static final String TAG = "TitleFetcher";
@@ -132,11 +128,10 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 		@Override
 		public String loadInBackground() {
 			try {
-				HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+				Response response = Request.get(url).execute();
 				
 				try {
-					InputStreamReader reader = new InputStreamReader(new BufferedInputStream(request.getInputStream()), Charsets.UTF_8);
-					String html = CharStreams.toString(reader);
+					String html = response.as(StringResource.class);
 
 					Matcher m = PATTERN_TITLE.matcher(html);
 					if (m.find()) {
@@ -145,7 +140,7 @@ public class TitleFetcher implements LoaderCallbacks<String> {
 						return null;
 					}
 				} finally {
-					request.disconnect();
+					response.disconnect();
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to fetch title for: " + url, e);

@@ -50,6 +50,9 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
         
         setTitle(R.string.activity_add_bookmark_title);
         
+        // Enable up button
+        getActionBar().setHomeButtonEnabled(true);
+        
         errorDrawable = DeliciousApplication.getErrorDrawable();
         
         titleFetcher = new TitleFetcher(this);
@@ -131,7 +134,8 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+				startActivity(new Intent(this, MainActivity.class)
+						.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
 				finish();
 			case R.id.menu_cancel:
 				finish();

@@ -1,87 +1,53 @@
 package se.alexanderblom.delicious.ui;
 
-import se.alexanderblom.delicious.Constants;
-import se.alexanderblom.delicious.DeliciousAccount;
 import se.alexanderblom.delicious.R;
-import se.alexanderblom.delicious.fragments.ClipboardFragment;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.animation.LayoutTransition;
-import android.animation.ObjectAnimator;
+import se.alexanderblom.delicious.fragments.PostListFragment;
+import se.alexanderblom.delicious.fragments.TagListFragment;
+import se.alexanderblom.delicious.view.InterceptLinearLayout;
+import se.alexanderblom.delicious.view.InterceptLinearLayout.OnInterceptListener;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 
-public abstract class MainActivity extends BaseActivity {
-	private static final String TAG = "MainActivity";
+public class MainActivity extends ContainerActivity {
+	private static final String TAG_LIST = "tag_list";
 	
-	private static final String META_MENU_ID = "menu_id";
+	private FlyoutActionModeCallback flyoutMenuCallback;
+	private ActionMode actionMode = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setContentView(R.layout.activity_main);
 		
-		getActionBar().setCustomView(R.layout.action_bar_navigation);
-		setupNavigation();
-
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(new ClipboardFragment(), ClipboardFragment.TAG)
-					.add(R.id.content, createFragment())
-					.commit();
-		}
-		
-		ViewGroup container = (ViewGroup) findViewById(R.id.container);
-		LayoutTransition transition = new LayoutTransition();
-
-		transition.setStartDelay(LayoutTransition.APPEARING, 0);
-		transition.setStartDelay(LayoutTransition.CHANGE_APPEARING, 0);
-		transition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, 0);
-		transition.setStartDelay(LayoutTransition.DISAPPEARING, 0);
-		
-		ObjectAnimator animator = ObjectAnimator.ofFloat(null, View.ALPHA, 1f, 0f);
-		transition.setAnimator(LayoutTransition.DISAPPEARING, animator);
-		
-		container.setLayoutTransition(transition);
-		
-		updateUsername(getAccount());
+		setupFlyout();
 	}
 	
-	protected abstract Fragment createFragment();
+	@Override
+	protected int getContentResource() {
+		return R.layout.activity_main;
+	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_main, menu);
-
-		return super.onCreateOptionsMenu(menu);
+	protected Fragment createFragment(Bundle savedInstanceState) {
+		return PostListFragment.newInstance(null);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_add:
-				startActivity(new Intent(this, AddBookmarkActivity.class));
-				break;
-			case R.id.menu_logout:
-				logout();
+			case android.R.id.home:
+				showFlyoutMenu();
 				break;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -89,111 +55,195 @@ public abstract class MainActivity extends BaseActivity {
 		
 		return true;
 	}
+	
+	public void showFlyoutMenu() {
+		if (actionMode == null) {
+			actionMode = startActionMode(flyoutMenuCallback);
+		}
+	}
 
-	@Override
-	protected void onTitleChanged(CharSequence title, int color) {
-		super.onTitleChanged(title, color);
-		
-		TextView titleView = (TextView) getActionBar().getCustomView().findViewById(R.id.page_title);
-		titleView.setText(title);
+	public void hideFlyoutMenu() {
+		if (actionMode != null) {
+			actionMode.finish();
+			actionMode = null;
+		}
 	}
 	
-	@Override
-	protected void accountChanged(DeliciousAccount account) {
-		// Just replace our old fragment, this works when an error is shown too
-		getFragmentManager().beginTransaction()
-				.replace(R.id.content, createFragment())
-				.commit();
+	public void setSelectedPage(int id) {
+		View flyoutView = findViewById(R.id.flyout_menu);
+		TextView recentView = (TextView) flyoutView.findViewById(R.id.page_recent);
+		TextView tagsView = (TextView) flyoutView.findViewById(R.id.page_tags);
 		
-		updateUsername(account);
+		recentView.setCompoundDrawables(null, null, null, null);
+		tagsView.setCompoundDrawables(null, null, null, null);
+		
+		if (id == R.id.page_recent) {
+			recentView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
+		} else if (id == R.id.page_tags) {
+			tagsView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
+		}
 	}
 	
-	private void setupNavigation() {
-		View v = getActionBar().getCustomView();
-		final PopupMenu menu = new PopupMenu(this, v);
-		menu.inflate(R.menu.menu_navigation);
+	private void setupFlyout() {
+		flyoutMenuCallback = new FlyoutActionModeCallback();
 		
-		// Check if we should hide any option
-		int menuId = getMenuId();
-		if (menuId != 0) {
-			// Hide item
-			menu.getMenu().findItem(menuId).setVisible(false);
+		View flyoutView = findViewById(R.id.flyout_menu);
+		TextView recentView = (TextView) flyoutView.findViewById(R.id.page_recent);
+		TextView tagsView = (TextView) flyoutView.findViewById(R.id.page_tags);
+		
+		recentView.setOnClickListener(flyoutMenuCallback);
+		tagsView.setOnClickListener(flyoutMenuCallback);
+
+		final InterceptLinearLayout interceptView = (InterceptLinearLayout) findViewById(R.id.container);
+		interceptView.setOnInterceptListener(new OnInterceptListener() {
+			@Override
+			public boolean isFlyoutOpen() {
+				return actionMode != null;
+			}
+			
+			@Override
+			public void shouldOpen() {
+				showFlyoutMenu();
+			}
+			
+			@Override
+			public void shouldClose() {
+				hideFlyoutMenu();
+			}
+		});
+	}
+
+	private class FlyoutActionModeCallback implements ActionMode.Callback, View.OnClickListener {
+		private static final float ALPHA = 0.6f;
+		
+		private Handler handler;
+		private Paint contentPaint;
+		
+		public FlyoutActionModeCallback() {
+			handler = new Handler();
+			contentPaint = new Paint();
+
+			// This will desaturate colors
+			float[] transform = {
+				1, 0, 0, 0, 0, 
+				0, 1, 0, 0, 0,
+				0, 0, 1, 0, 0, 
+				0, 0, 0, 1, 0
+			};
+			
+			ColorMatrixColorFilter filter = new ColorMatrixColorFilter(transform);
+			contentPaint.setColorFilter(filter);
 		}
 		
-		menu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				int id = item.getItemId();
-				switch (id) {
-					case R.id.menu_recent:
-						Intent recent = new Intent(MainActivity.this, RecentPostsActivity.class)
-								.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						
-						startActivity(recent);
-						break;
-					case R.id.menu_tags:
-						startActivity(new Intent(MainActivity.this, TagListActivity.class));
-						break;
-					default:
-						return false;
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+		
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mode.setTitle(R.string.menu_title);
+
+			final View flyoutView = findViewById(R.id.flyout_menu);
+			final View containerView = findViewById(R.id.container);
+			
+			int width = flyoutView.getWidth();
+			flyoutView.animate().translationX(0f).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+					flyoutView.setVisibility(View.VISIBLE);
 				}
 				
-				return true;
-			}
-		});
-		
-		v.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				menu.show();
-			}
-		});
-	}
-	
-	private int getMenuId() {
-		try {
-			ActivityInfo ai = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+				}
+			});
 			
-			if (ai.metaData != null) {
-				return ai.metaData.getInt(META_MENU_ID, 0);
-			} else {
-				return 0;
-			}
-		} catch (NameNotFoundException e) {
-			throw new RuntimeException(e);
+			containerView.animate().translationX(width).alpha(ALPHA).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					containerView.setLayerType(View.LAYER_TYPE_HARDWARE, contentPaint);
+				}
+			});
+			
+			return true;
 		}
 		
-	}
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			final View flyoutView = findViewById(R.id.flyout_menu);
+			final View containerView = findViewById(R.id.container);
 
-	private void updateUsername(DeliciousAccount account) {
-		TextView usernameView = (TextView) getActionBar().getCustomView().findViewById(R.id.username);
-		usernameView.setText(account.getUsername());
-	}
+			int width = flyoutView.getWidth();
+			flyoutView.animate().translationX(-width).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					flyoutView.setLayerType(View.LAYER_TYPE_NONE, null);
+					flyoutView.setVisibility(View.INVISIBLE);
+				}
+			});
+			containerView.animate().translationX(0f).alpha(1f).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+				}
+			});
+			
+			actionMode = null;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			return false;
+		}
 
-	private void logout() {
-		Log.d(TAG, "Removing account");
+		/**
+		 * Called when the user clicks a flyout menu option
+		 */
+		@Override
+		public void onClick(View v) {
+			int id = v.getId();
+			handler.postDelayed(new PageSwitcher(id), 300);
+			
+			if (actionMode != null) {
+				actionMode.finish();
+			}
+		}
 		
-		AccountManager accountManager = AccountManager.get(this);
-		Account accounts[] = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
-		Account account = accounts[0];
-		
-		// Callback to wait for the account to actually be removed
-		AccountManagerCallback<Boolean> callback = new AccountManagerCallback<Boolean>() {
+		private class PageSwitcher implements Runnable {
+			private int id;
+			
+			public PageSwitcher(int id) {
+				this.id = id;
+			}
+
 			@Override
-			public void run(AccountManagerFuture<Boolean> future) {
-				try {
-					if (future.getResult()) {
-						checkAccount();
-					} else {
-						// Could not remove account, should not happen
-						Log.e(TAG, "Could not remove account");
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error fetching remove account result", e);
+			public void run() {
+				switch (id) {
+					case R.id.page_recent:
+						getFragmentManager().popBackStack(TAG_LIST, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+						break;
+					case R.id.page_tags:
+						FragmentManager fm = getFragmentManager();
+						if (!fm.popBackStackImmediate(TAG_LIST, 0)
+								&& fm.findFragmentByTag(TAG_LIST) == null) {
+							// Only add tag list if we can't find it
+							fm.beginTransaction()
+									.replace(R.id.content, new TagListFragment(), TAG_LIST)
+									.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+									.addToBackStack(TAG_LIST)
+									.commit();
+						}
+						break;
 				}
 			}
-		};
-		
-		accountManager.removeAccount(account, callback, null);
+		}
 	}
 }
