@@ -76,6 +76,21 @@ public class MainActivity extends ContainerActivity {
 		}
 	}
 	
+	public void setSelectedItem(int id) {
+		View flyoutView = findViewById(R.id.flyout_menu);
+		TextView recentView = (TextView) flyoutView.findViewById(R.id.menu_recent);
+		TextView tagsView = (TextView) flyoutView.findViewById(R.id.menu_tags);
+		
+		recentView.setCompoundDrawables(null, null, null, null);
+		tagsView.setCompoundDrawables(null, null, null, null);
+		
+		if (id == R.id.menu_recent) {
+			recentView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
+		} else if (id == R.id.menu_tags) {
+			tagsView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
+		}
+	}
+	
 	private void setupFlyout() {
 		int menuId = getMenuId();
 		
@@ -122,13 +137,7 @@ public class MainActivity extends ContainerActivity {
 		
 		recentView.setOnClickListener(onClick);
 		tagsView.setOnClickListener(onClick);
-		
-		if (menuId == R.id.menu_recent) {
-			recentView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
-		} else if (menuId == R.id.menu_tags) {
-			tagsView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.flyout_item_indicator, 0);
-		}
-		
+
 		final InterceptLinearLayout interceptView = (InterceptLinearLayout) findViewById(R.id.container);
 		interceptView.setOnInterceptListener(new OnInterceptListener() {
 			@Override

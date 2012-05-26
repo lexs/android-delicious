@@ -11,7 +11,9 @@ import se.alexanderblom.delicious.http.Response;
 import se.alexanderblom.delicious.model.Post;
 import se.alexanderblom.delicious.model.PostsParser;
 import se.alexanderblom.delicious.ui.BaseActivity;
+import se.alexanderblom.delicious.ui.MainActivity;
 import se.alexanderblom.delicious.util.AsyncLoader;
+import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
@@ -82,10 +84,16 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	public void onStart() {
 		super.onStart();
 		
+		Activity activity = getActivity();
 		if (tag != null) {
-			getActivity().setTitle(getString(R.string.page_tag, tag));
+			activity.setTitle(getString(R.string.page_tag, tag));
 		} else {
-			getActivity().setTitle(R.string.page_recent);
+			activity.setTitle(R.string.page_recent);
+		}
+		
+		if (tag == null && activity instanceof MainActivity) {
+			MainActivity main = (MainActivity) activity;
+			main.setSelectedItem(R.id.menu_recent);
 		}
 	}
 
