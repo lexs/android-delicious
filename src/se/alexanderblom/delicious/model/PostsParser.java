@@ -73,7 +73,7 @@ public class PostsParser {
 		long timeMillis = 0;
 		
 		reader.beginObject();
-		reader.nextName(); // "post"
+		waitFor("post");
 
 		reader.beginObject();
 		while (reader.hasNext()) {
@@ -107,5 +107,17 @@ public class PostsParser {
 		reader.endObject();
 		
 		return new Post(link, title, notes, tags, timeMillis);
+	}
+	
+	private void waitFor(String name) throws IOException {
+		while (reader.hasNext()) {
+			if (name.equals(reader.nextName())) {
+				return;
+			} else {
+				reader.skipValue();
+			}
+		}
+		
+		throw new IOException("Could not find '" + name + "'");
 	}
 }

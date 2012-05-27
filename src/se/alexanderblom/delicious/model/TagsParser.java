@@ -40,7 +40,7 @@ public class TagsParser {
 		int tagCount = 0;
 		
 		reader.beginObject();
-		reader.nextName(); // "tag"
+		waitFor("tag");
 
 		reader.beginObject();
 		while (reader.hasNext()) {
