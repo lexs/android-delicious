@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.text.TextUtils;
 import android.util.JsonReader;
 
 public class TagsParser {
@@ -22,8 +23,7 @@ public class TagsParser {
 			waitFor("tags");
 			reader.beginArray();
 			while (reader.hasNext()) {
-				Tag tag = readTag();
-				tags.add(tag);
+				readTag(tags);
 			}
 			reader.endArray();
 			
@@ -35,7 +35,7 @@ public class TagsParser {
 		}
 	}
 	
-	private Tag readTag() throws IOException {
+	private void readTag(List<Tag> tags) throws IOException {
 		String tagName = null;
 		int tagCount = 0;
 		
@@ -57,7 +57,10 @@ public class TagsParser {
 		
 		reader.endObject();
 		
-		return new Tag(tagName, tagCount);
+		// Delicious passes empty tags for some reason, ignore those
+		if (!TextUtils.isEmpty(tagName)) {
+			tags.add(new  Tag(tagName, tagCount));
+		}
 	}
 	
 	private void waitFor(String name) throws IOException {
