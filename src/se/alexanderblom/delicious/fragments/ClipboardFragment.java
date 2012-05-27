@@ -50,11 +50,6 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 				saveClipboardLink();
 			}
 		});
-		
-		if (savedInstanceState == null) {
-			// Just launched, check clipboard
-			checkClipboard();
-		}
 
 		// We don't have any heavy state
 		setRetainInstance(true);
@@ -72,6 +67,7 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 		super.onResume();
 		
 		clipboard.addPrimaryClipChangedListener(this);
+		checkClipboard();
 	}
 	
 	@Override

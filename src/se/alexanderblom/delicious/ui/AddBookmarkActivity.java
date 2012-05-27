@@ -20,7 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
@@ -65,10 +64,11 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
         tagsView = (MultiAutoCompleteTextView) findViewById(R.id.tags);
         privateView = (CheckBox) findViewById(R.id.mark_private);
         
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        // TODO: Implement tag suggestion
+        /*ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_dropdown_item, TAGS);
         tagsView.setAdapter(adapter);
-        tagsView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        tagsView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());*/
         
         // Enable user to press enter when done
         tagsView.setOnEditorActionListener(new OnEditorActionListener() {
@@ -135,7 +135,9 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				startActivity(new Intent(this, MainActivity.class)
-						.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+						.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+								| Intent.FLAG_ACTIVITY_SINGLE_TOP
+								| Intent.FLAG_ACTIVITY_NEW_TASK));
 				finish();
 			case R.id.menu_cancel:
 				finish();
@@ -216,8 +218,4 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
 			dialog.dismiss();
 		}
 	}
-	
-	private static final String[] TAGS = new String[] {
-        "android", "reddit", "design", "sweden", "sweddit", "sweet", "python"
-    };
 }
