@@ -25,6 +25,10 @@ public class TagsBinder {
 
 	public static Spannable buildTagList(List<String> tags) {
 		SpannableStringBuilder builder = new SpannableStringBuilder();
+
+		if (tags == null || tags.isEmpty()) {
+			return builder;
+		}
 		
 		for (String tag : tags) {
 			int pos = builder.length();
