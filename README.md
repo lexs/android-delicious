@@ -15,6 +15,10 @@ Features
 * Colored tag display (wow!)
 * Sliding menu
 
+License
+-------
+Licensed under Apache 2.0, but I'd be glad if you tweet me or something if you find this useful.
+
 Screenshots
 -----------
 [![Recent bookmarks](https://raw.github.com/lexs/android-delicious/master/screenshots/1_small.png)](https://raw.github.com/lexs/android-delicious/master/screenshots/1.png)
