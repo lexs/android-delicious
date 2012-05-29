@@ -4,5 +4,4 @@
     <dimen name="editor_field_left_padding">4dip</dimen>
     <dimen name="flyout_menu_width">150dip</dimen>
     <dimen name="flyout_menu_width_negative">-150dip</dimen>
-    <dimen name="flyout_menu_drag_distance">50dp</dimen>
 </resources>

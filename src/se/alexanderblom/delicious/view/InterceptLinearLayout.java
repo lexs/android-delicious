@@ -1,9 +1,9 @@
-package se.alexanderblom.delicious.view;
+ package se.alexanderblom.delicious.view;
 
-import se.alexanderblom.delicious.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 
 public class InterceptLinearLayout extends LinearLayout {
@@ -14,7 +14,8 @@ public class InterceptLinearLayout extends LinearLayout {
 	}
 	
 	private OnInterceptListener interceptListener;
-	private int dragDistance;
+	private int edgeSlop;
+	private int touchSlop;
 	
 	private int ignoreIndex = -1;
 	private float startX;
@@ -38,7 +39,10 @@ public class InterceptLinearLayout extends LinearLayout {
 	}
 	
 	private void init() {
-		dragDistance = getContext().getResources().getDimensionPixelSize(R.dimen.flyout_menu_drag_distance);
+		ViewConfiguration config = ViewConfiguration.get(getContext());
+		
+		edgeSlop = config.getScaledEdgeSlop();
+		touchSlop = config.getScaledTouchSlop();
 	}
 	
 	@Override
@@ -60,7 +64,7 @@ public class InterceptLinearLayout extends LinearLayout {
 		} else if (action == MotionEvent.ACTION_MOVE) {
 			// It's closed, open if we drag right
 			float distance = event.getRawX() - startX;
-			if (distance > 0) {
+			if (distance > touchSlop) {
 				if (interceptListener != null) {
 					interceptListener.shouldOpen();
 					
@@ -85,7 +89,7 @@ public class InterceptLinearLayout extends LinearLayout {
 		if (interceptListener.isFlyoutOpen()) {
 			// Steal all the events
 			return true;
-		} else if (ev.getActionMasked() == MotionEvent.ACTION_DOWN && ev.getX() < dragDistance) {
+		} else if (ev.getActionMasked() == MotionEvent.ACTION_DOWN && ev.getX() < edgeSlop) {
 			// If it's closed, only steal events close to the left edge
 			startX = ev.getRawX();
 			
