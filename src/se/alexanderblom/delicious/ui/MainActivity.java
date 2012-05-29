@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -41,6 +42,14 @@ public class MainActivity extends ContainerActivity {
 	@Override
 	protected Fragment createFragment(Bundle savedInstanceState) {
 		return PostListFragment.newInstance(null);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_main, menu);
+
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
