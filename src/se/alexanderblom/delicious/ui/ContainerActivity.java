@@ -30,9 +30,12 @@ public abstract class ContainerActivity extends BaseActivity {
 		getActionBar().setHomeButtonEnabled(true);
 
 		if (savedInstanceState == null) {
+			ClipboardFragment clipboard = new ClipboardFragment();
+			
 			getFragmentManager().beginTransaction()
-					.add(new ClipboardFragment(), ClipboardFragment.TAG)
 					.add(R.id.content, createFragment(savedInstanceState))
+					.add(R.id.clipboard_display, clipboard)
+					.hide(clipboard)
 					.commit();
 		}
 		

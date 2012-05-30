@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fae599"
+    android:paddingBottom="16dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="16dp">
+
+    <TextView
+        android:id="@+id/clipboard_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/clipboard_save_button"
+        android:text="@string/clipboard_text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/clipboard_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/clipboard_info"
+        android:layout_toLeftOf="@+id/clipboard_save_button"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/clipboard_save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="@string/clipboard_button" />
+
+</RelativeLayout>

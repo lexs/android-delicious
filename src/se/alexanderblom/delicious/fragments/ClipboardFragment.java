@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class ClipboardFragment extends Fragment implements ClipboardManager.OnPrimaryClipChangedListener {
-	public static final String TAG = "ClipboardFragment";
+	private static final String TAG = "ClipboardFragment";
 	
 	private static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 	private static final int LINK_TIMEOUT = 6 * 1000; // 6 seconds
@@ -24,35 +26,36 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 	private static String lastUrl = null;
 	
 	private Handler handler;
-	
 	private ClipboardManager clipboard;
 	
-	private View clipboardDisplay;
 	private TextView clipboardLinkView;
-	
-	private String url;
+	private String currentUrl;
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		
 		handler = new Handler();
-		
 		clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+
+		// Retain so we can keep our handler
+		setRetainInstance(true);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View v = inflater.inflate(R.layout.fragment_clipboard, container, false);
+		clipboardLinkView = (TextView) v.findViewById(R.id.clipboard_link);
 		
-		clipboardDisplay = getActivity().findViewById(R.id.clipboard_display);
-		clipboardLinkView = (TextView) getActivity().findViewById(R.id.clipboard_link);
-		
-		View clipboardButton = getActivity().findViewById(R.id.clipboard_save_button);
+		View clipboardButton = v.findViewById(R.id.clipboard_save_button);
 		clipboardButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				saveClipboardLink();
 			}
 		});
-
-		// We don't have any heavy state
-		setRetainInstance(true);
+		
+		return v;
 	}
 	
 	@Override
@@ -71,14 +74,13 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 	}
 	
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+	public void onDestroy() {
+		super.onDestroy();
 		
-		// Odd bug which requires this for savedInstanceState to not be null
-		// See http://code.google.com/p/android/issues/detail?id=31732
-		outState.putString("", "");
+		// Avoid being called after we're gone
+		handler.removeCallbacks(hideRunnable);
 	}
-	
+
 	@Override
 	public void onPrimaryClipChanged() {
 		Log.d(TAG, "Clipboard changed");
@@ -87,16 +89,18 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 	}
 	
 	private void checkClipboard() {
-		// Check that the clip is plain text
-		if (clipboard.hasPrimaryClip() && clipboard.getPrimaryClipDescription().hasMimeType(MIMETYPE_TEXT_PLAIN)) {
+		if (currentUrl != null) {
+			clipboardLinkView.setText(currentUrl);
+		} else if (clipboard.hasPrimaryClip() && clipboard.getPrimaryClipDescription().hasMimeType(MIMETYPE_TEXT_PLAIN)) {
+			// Check that the clip is plain text
 			ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
 			CharSequence text = item.getText();
 			
 			// Check if it's a web url and that we have not previously seen it
-			if (!text.equals(lastUrl) && Patterns.WEB_URL.matcher(text).find() && !text.equals(url)) {
+			if (!text.equals(lastUrl) && Patterns.WEB_URL.matcher(text).find() && !text.equals(currentUrl)) {
 				Log.d(TAG, "New web url found: " + text);
 				
-				lastUrl = url = text.toString();
+				lastUrl = currentUrl = text.toString();
 				
 				displayClipboard(text);
 			}
@@ -110,21 +114,29 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 		showClipboard();
 		
 		// Hide link after a while
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				hideClipboard();
-			}
-		}, LINK_TIMEOUT);
+		handler.removeCallbacks(hideRunnable);
+		handler.postDelayed(hideRunnable, LINK_TIMEOUT);
 	}
 	
 	private void showClipboard() {
-		clipboardDisplay.setVisibility(View.VISIBLE);
+		getFragmentManager().beginTransaction()
+				.show(this)
+				.commit();
 	}
 	
 	private void hideClipboard() {
-		clipboardDisplay.setVisibility(View.GONE);
+		currentUrl = null;
+		getFragmentManager().beginTransaction()
+				.hide(this)
+				.commit();
 	}
+	
+	private Runnable hideRunnable = new Runnable() {
+		@Override
+		public void run() {
+			hideClipboard();
+		}
+	};
 /*
 	private void showClipboard() {
 		// Animate transition
@@ -165,7 +177,7 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 */
 	private void saveClipboardLink() {
 		Intent intent = new Intent(Intent.ACTION_SEND, null, getActivity(), AddBookmarkActivity.class)
-				.putExtra(Intent.EXTRA_TEXT, url);
+				.putExtra(Intent.EXTRA_TEXT, currentUrl);
 		
 		startActivity(intent);
 	}
