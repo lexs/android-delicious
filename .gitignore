@@ -3,3 +3,4 @@ gen/
 proguard/
 .DS_Store
 
+src/se/alexanderblom/delicious/SecureConstants.java
