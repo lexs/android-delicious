@@ -14,7 +14,6 @@ import se.alexanderblom.delicious.ui.BaseActivity;
 import se.alexanderblom.delicious.ui.MainActivity;
 import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.Activity;
-import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-public class PostListFragment extends ListFragment implements LoaderCallbacks<List<Post>> {
+public class PostListFragment extends ErrorListFragment implements LoaderCallbacks<List<Post>> {
 	private static final String TAG = "PostListFragment";
 	
 	private static final String RECENTS_URL = "https://api.del.icio.us/v1/json/posts/recent";
@@ -153,15 +152,16 @@ public class PostListFragment extends ListFragment implements LoaderCallbacks<Li
 	public void onLoaderReset(Loader<List<Post>> loader) {
 		adapter.clear();
 	}
+	
+	@Override
+	protected void onRetry() {
+		getLoaderManager().initLoader(POSTS_LOADER, null, this);
+	}
 
 	private void showLoadingError() {
 		getLoaderManager().destroyLoader(POSTS_LOADER);
-		
-		ConnectionErrorFragment f = ConnectionErrorFragment.newInlineError(this);
-		getFragmentManager().beginTransaction()
-				.detach(this)
-				.add(getId(), f)
-				.commitAllowingStateLoss();
+
+		showError();
 	}
 
 	private static class PostsLoader extends AsyncLoader<List<Post>> {

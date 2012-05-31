@@ -15,7 +15,6 @@ import se.alexanderblom.delicious.ui.MainActivity;
 import se.alexanderblom.delicious.ui.PostListActivity;
 import se.alexanderblom.delicious.util.AsyncLoader;
 import android.app.Activity;
-import android.app.ListFragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-public class TagListFragment extends ListFragment implements LoaderCallbacks<List<Tag>> {
+public class TagListFragment extends ErrorListFragment implements LoaderCallbacks<List<Tag>> {
 	private static final String TAG = "TagListFragment";
 	
 	private static final String TAGS_URL = "https://api.del.icio.us/v1/json/tags/get";
@@ -124,14 +123,15 @@ public class TagListFragment extends ListFragment implements LoaderCallbacks<Lis
 		adapter.clear();
 	}
 	
+	@Override
+	protected void onRetry() {
+		getLoaderManager().initLoader(TAGS_LOADER, null, this);
+	}
+	
 	private void showLoadingError() {
 		getLoaderManager().destroyLoader(TAGS_LOADER);
-		
-		ConnectionErrorFragment f = ConnectionErrorFragment.newInlineError(this);
-		getFragmentManager().beginTransaction()
-				.detach(this)
-				.add(getId(), f)
-				.commitAllowingStateLoss();
+
+		showError();
 	}
 
 	private static class TagsLoader extends AsyncLoader<List<Tag>> {
