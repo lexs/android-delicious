@@ -38,7 +38,6 @@ public class PostListFragment extends ErrorListFragment implements LoaderCallbac
 	private static final String ARG_TAG = "tag";
 	private static final int POSTS_LOADER = 1;
 
-	private DeliciousAccount deliciousAccount;
 	private PostsAdapter adapter;
 	
 	private String tag;
@@ -64,7 +63,6 @@ public class PostListFragment extends ErrorListFragment implements LoaderCallbac
 		Bundle args = getArguments() != null ? getArguments() : Bundle.EMPTY;
 		tag = args.getString(ARG_TAG);
 		
-		deliciousAccount = new DeliciousAccount(getActivity());
 		adapter = new PostsAdapter(getActivity());
 		
 		setListAdapter(adapter);
@@ -140,7 +138,7 @@ public class PostListFragment extends ErrorListFragment implements LoaderCallbac
 		} 
 		
 		setListShown(false);
-		return new PostsLoader(getActivity(), deliciousAccount, url);
+		return new PostsLoader(getActivity(), DeliciousAccount.get(getActivity()), url);
 	}
 
 	@Override
@@ -187,7 +185,7 @@ public class PostListFragment extends ErrorListFragment implements LoaderCallbac
 		public List<Post> loadInBackground() {
 			try {
 				Response response = Request.get(url)
-						.addAuth(account.getAuth())
+						.addAuth(account)
 						.execute();
 
 				try {

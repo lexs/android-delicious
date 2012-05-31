@@ -33,14 +33,12 @@ public class TagListFragment extends ErrorListFragment implements LoaderCallback
 	private static final String TAGS_URL = "https://api.del.icio.us/v1/json/tags/get";
 	private static final int TAGS_LOADER = 1;
 	
-	private DeliciousAccount account;
 	private TagsAdapter adapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		account = new DeliciousAccount(getActivity());
 		adapter = new TagsAdapter(getActivity());
 		
 		setListAdapter(adapter);
@@ -104,7 +102,7 @@ public class TagListFragment extends ErrorListFragment implements LoaderCallback
 	@Override
 	public Loader<List<Tag>> onCreateLoader(int id, Bundle args) {
 		setListShown(false);
-		return new TagsLoader(getActivity(), account, TAGS_URL);
+		return new TagsLoader(getActivity(), DeliciousAccount.get(getActivity()), TAGS_URL);
 	}
 
 	@Override
@@ -149,7 +147,7 @@ public class TagListFragment extends ErrorListFragment implements LoaderCallback
 		public List<Tag> loadInBackground() {
 			try {
 				Response response = Request.get(url)
-						.addAuth(account.getAuth())
+						.addAuth(account)
 						.execute();
 
 				try {

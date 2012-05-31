@@ -10,7 +10,6 @@ import se.alexanderblom.delicious.fragments.ProgressDialogFragment;
 import se.alexanderblom.delicious.http.BasicAuthentication;
 import se.alexanderblom.delicious.http.Request;
 import se.alexanderblom.delicious.http.Response;
-import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.content.Context;
@@ -37,8 +36,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	private EditText passwordView;
 	
 	private Drawable errorDrawable;
-	
-	private DeliciousAccount deliciousAccount;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,8 +70,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		
 		errorDrawable = DeliciousApplication.getErrorDrawable();
 		
-		deliciousAccount = new DeliciousAccount(this);
-		if (deliciousAccount.exists()) {
+		// Do we already have an account?
+		if (DeliciousAccount.get(this) != null) {
 			Toast.makeText(this, R.string.toast_account_exists, Toast.LENGTH_SHORT).show();
 			finish();
 		}
@@ -98,10 +95,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		}
 	}
 	
-	private void finishLogin(Account account) {
+	private void finishLogin(DeliciousAccount deliciousAccount) {
 		Bundle result = new Bundle();
 		result.putString(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
-		result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+		result.putString(AccountManager.KEY_ACCOUNT_NAME, deliciousAccount.getUsername());
 		
 		setAccountAuthenticatorResult(result);
 
@@ -109,14 +106,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		finish();
 	}
 
-	private class LoginTask extends AsyncTask<Void, Void, Account> {
-		private AccountManager accountManager;
+	private class LoginTask extends AsyncTask<Void, Void, DeliciousAccount> {
+		private Context context;
 		
 		private String username;
 		private String password;
 		
 		public LoginTask(Context context, String username, String password) {
-			accountManager = AccountManager.get(context);
+			this.context = context;
 			
 			this.username = username;
 			this.password = password;
@@ -129,7 +126,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		}
 		
 		@Override
-		protected Account doInBackground(Void... params) {
+		protected DeliciousAccount doInBackground(Void... params) {
 			try {
 				Response response = Request.get("https://api.del.icio.us/v1/posts/update")
 						.addAuth(new BasicAuthentication(username, password))
@@ -161,17 +158,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			}
 		}
 		
-		private Account createAccount() {
+		private DeliciousAccount createAccount() {
 			// We do this on here (on a separate thread) because this will cause
 			// disk access
-			Account account = new Account(username, Constants.ACCOUNT_TYPE);
-			accountManager.addAccountExplicitly(account, DeliciousAccount.encryptPassword(password), null);
-			
-			return account;
+			return DeliciousAccount.create(context, username, password);
 		}
 
 		@Override
-		protected void onPostExecute(Account account) {
+		protected void onPostExecute(DeliciousAccount account) {
 			if (account != null) {
 				finishLogin(account);
 			} else {

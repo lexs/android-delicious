@@ -77,7 +77,7 @@ public class BookmarkService extends IntentService {
 		
 		try {
 			Response response = Request.get(url)
-					.addAuth(new DeliciousAccount(this).getAuth())
+					.addAuth(DeliciousAccount.get(this))
 					.execute();
 			
 			try {

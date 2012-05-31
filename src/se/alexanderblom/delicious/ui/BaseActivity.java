@@ -22,7 +22,7 @@ public abstract class BaseActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		deliciousAccount = new DeliciousAccount(this);
+		deliciousAccount = DeliciousAccount.get(this);
 	}
 	
 	@Override
@@ -38,12 +38,15 @@ public abstract class BaseActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if (requestCode == REQUEST_LOGIN) {
+			// Get the account again
+			deliciousAccount = DeliciousAccount.get(this);
+			
 			if (resultCode == RESULT_OK) {
 				Log.d(TAG, "Login okay");
 				accountChanged(deliciousAccount);
 			} else {
 				// Login task may have been reset, check if account exists
-				if (deliciousAccount.exists()) {
+				if (deliciousAccount != null) {
 					Log.d(TAG, "Login reset");
 					accountChanged(deliciousAccount);
 				} else {
@@ -63,7 +66,8 @@ public abstract class BaseActivity extends Activity {
 	}
 	
 	protected void checkAccount() {
-		if (!deliciousAccount.exists()) {
+		deliciousAccount = DeliciousAccount.get(this);
+		if (deliciousAccount == null) {
 			Log.d(TAG, "Account missing, asking user to add one");
 			
 			Intent intent = new Intent(this, LoginActivity.class)
@@ -73,7 +77,7 @@ public abstract class BaseActivity extends Activity {
 	}
 	
 	public boolean hasAccount() {
-		return deliciousAccount.exists();
+		return deliciousAccount != null;
 	}
 	
 	public DeliciousAccount getAccount() {
