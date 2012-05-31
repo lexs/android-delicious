@@ -21,11 +21,14 @@ import android.content.Loader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
 
 public class PostListFragment extends ErrorListFragment implements LoaderCallbacks<List<Post>> {
 	private static final String TAG = "PostListFragment";
@@ -71,6 +74,9 @@ public class PostListFragment extends ErrorListFragment implements LoaderCallbac
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		getListView().setMultiChoiceModeListener(new PostActionMode());
 
 		BaseActivity activity = (BaseActivity) getActivity();
 		if (activity.hasAccount()) {
@@ -194,6 +200,70 @@ public class PostListFragment extends ErrorListFragment implements LoaderCallbac
 
 				return null;
 			}
+		}
+	}
+	
+	private class PostActionMode implements ListView.MultiChoiceModeListener, ShareActionProvider.OnShareTargetSelectedListener {
+		private ActionMode actionMode;
+		private ShareActionProvider provider;
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			return false;
+		}
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			actionMode = mode;
+			
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.context_post, menu);
+			
+			return true;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			actionMode = null;
+			provider = null;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			provider = (ShareActionProvider) menu.findItem(R.id.menu_share).getActionProvider();
+			provider.setOnShareTargetSelectedListener(this);
+			
+			return false;
+		}
+
+		@Override
+		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+			if (checked) {
+				// Only allow the user to check one item
+				SparseBooleanArray checkedArray = getListView().getCheckedItemPositions();
+				checkedArray.clear();
+				checkedArray.put(position, true);
+				
+				provider.setShareIntent(createShareIntent(adapter.getItem(position)));
+			} else {
+				mode.finish();
+			}
+		}
+		
+		@Override
+		public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
+			// Close action mode after user has shared
+			actionMode.finish();
+			
+			return false;
+		}
+		
+		private Intent createShareIntent(Post post) {
+			return new Intent(Intent.ACTION_SEND)
+					.setType("text/plain")
+					.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET)
+					.putExtra(Intent.EXTRA_SUBJECT, post.getTitle())
+					.putExtra(Intent.EXTRA_TEXT, post.getLink());
 		}
 	}
 }

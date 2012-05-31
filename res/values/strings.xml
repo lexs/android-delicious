@@ -49,6 +49,9 @@
     <string name="toast_account_exists">Only one account is supported</string>
     <string name="toast_login_failed">Login failed, please try again</string>
     
+    <!-- PostListFragment -->
+    <string name="menu_share">Share</string>
+    
     <!-- ConnectionErrorFragment -->
     <string name="dialog_button_retry">Retry</string>
     <string name="dialog_button_cancel">Cancel</string>
