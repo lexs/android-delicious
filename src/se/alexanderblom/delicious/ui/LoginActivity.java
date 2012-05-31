@@ -78,8 +78,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	}
 
 	private void handleLogin() {
-		String username = usernameView.getText().toString();
-		String password = passwordView.getText().toString();
+		String username = usernameView.getText().toString().trim();
+		String password = passwordView.getText().toString().trim();
 		
 		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 			// Validation

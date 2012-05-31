@@ -191,10 +191,10 @@ public class AddBookmarkActivity extends BaseActivity implements DetachableResul
 		dialog.setCancelable(false);
 		dialog.show(fm, DIALOG_TAG);
 		
-		String url = urlView.getText().toString();
-		String title = titleView.getText().toString();
-		String notes = notesView.getText().toString();
-		String tags = tagsView.getText().toString();
+		String url = urlView.getText().toString().trim();
+		String title = titleView.getText().toString().trim();
+		String notes = notesView.getText().toString().trim();
+		String tags = tagsView.getText().toString().trim();
 		boolean markedPrivate = privateView.isChecked();
 		
 		Intent intent = new Intent(BookmarkService.ACTION_SAVE_BOOKMARK, null, this, BookmarkService.class)
