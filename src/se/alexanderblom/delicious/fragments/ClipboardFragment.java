@@ -72,12 +72,12 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 		clipboard.addPrimaryClipChangedListener(this);
 		checkClipboard();
 	}
-	
+
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
 		
-		// Avoid being called after we're gone
+		// It's not valid to run fragments transactions after this
 		handler.removeCallbacks(hideRunnable);
 	}
 
