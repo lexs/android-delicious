@@ -1,8 +1,6 @@
 package se.alexanderblom.delicious.model;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,7 +11,6 @@ import java.util.List;
 import android.util.JsonReader;
 import android.util.Log;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -24,12 +21,6 @@ public class PostsParser {
 	
 	private JsonReader reader;
 	private SimpleDateFormat dateFormat;
-
-	public PostsParser(InputStream is) {
-		reader = new JsonReader(new InputStreamReader(is, Charsets.UTF_8));
-		
-		dateFormat = new SimpleDateFormat(DATE_FORMAT);
-	}
 	
 	public PostsParser(Reader in) {
 		reader = new JsonReader(in);
