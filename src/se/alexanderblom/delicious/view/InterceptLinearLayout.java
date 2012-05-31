@@ -18,6 +18,7 @@ public class InterceptLinearLayout extends LinearLayout {
 	private int touchSlop;
 	
 	private int ignoreIndex = -1;
+	private boolean watchingGesture = false;
 	private float startX;
 	
 	public InterceptLinearLayout(Context context, AttributeSet attrs, int defStyle) {
@@ -61,7 +62,7 @@ public class InterceptLinearLayout extends LinearLayout {
 			if (action == MotionEvent.ACTION_UP) {
 				interceptListener.shouldClose();
 			}
-		} else if (action == MotionEvent.ACTION_MOVE) {
+		} else if (action == MotionEvent.ACTION_MOVE && watchingGesture) {
 			// It's closed, open if we drag right
 			float distance = event.getRawX() - startX;
 			if (distance > touchSlop) {
@@ -81,6 +82,7 @@ public class InterceptLinearLayout extends LinearLayout {
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		// New touch event, don't ignore it
 		ignoreIndex = -1;
+		watchingGesture = false;
 		
 		if (interceptListener == null) {
 			return false;
@@ -92,6 +94,7 @@ public class InterceptLinearLayout extends LinearLayout {
 		} else if (ev.getActionMasked() == MotionEvent.ACTION_DOWN && ev.getX() < edgeSlop) {
 			// If it's closed, only steal events close to the left edge
 			startX = ev.getRawX();
+			watchingGesture = true;
 			
 			return true;
 		} else {
