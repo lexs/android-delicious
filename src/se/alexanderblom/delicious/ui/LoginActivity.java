@@ -165,7 +165,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 			// We do this on here (on a separate thread) because this will cause
 			// disk access
 			Account account = new Account(username, Constants.ACCOUNT_TYPE);
-			accountManager.addAccountExplicitly(account, password, null);
+			accountManager.addAccountExplicitly(account, DeliciousAccount.encryptPassword(password), null);
 			
 			return account;
 		}
