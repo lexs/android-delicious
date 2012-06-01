@@ -16,6 +16,7 @@
 
 	<style name="Theme.Delicious" parent="android:Theme.Holo.Light.DarkActionBar">
 		<item name="android:actionBarStyle">@style/Widget.ActionBar</item>
+		<item name="android:actionModeCloseDrawable">@drawable/ic_action_cancel</item>
 	</style>
 	
 	<style name="Theme.Delicious.Main" parent="Theme.Delicious">
