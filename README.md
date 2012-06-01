@@ -2,6 +2,7 @@ Delicious Android
 =================
 
 Delicious Android is an Android app which helps you access and save bookmarks via [Delicious](http://www.delicious.com/).
+It's available over at [Google Play](https://play.google.com/store/apps/details?id=se.alexanderblom.delicious).
 
 Features
 --------
