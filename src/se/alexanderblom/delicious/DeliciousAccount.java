@@ -7,6 +7,7 @@ import se.alexanderblom.delicious.util.Crypto;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.provider.Settings.Secure;
 
 import com.google.common.base.Charsets;
 
@@ -21,7 +22,7 @@ public class DeliciousAccount implements Authentication {
 		Account accounts[] = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
 		
 		if (accounts.length > 0) {
-			return new DeliciousAccount(accountManager, accounts[0]);
+			return new DeliciousAccount(context, accountManager, accounts[0]);
 		} else {
 			return null;
 		}
@@ -31,18 +32,20 @@ public class DeliciousAccount implements Authentication {
 		AccountManager accountManager = AccountManager.get(context.getApplicationContext());
 		
 		Account account = new Account(username, Constants.ACCOUNT_TYPE);
-		DeliciousAccount deliciousAccount = new DeliciousAccount(accountManager, account);
+		DeliciousAccount deliciousAccount = new DeliciousAccount(context, accountManager, account);
 		
 		accountManager.addAccountExplicitly(account, deliciousAccount.encryptPassword(password), null);
 		
 		return deliciousAccount;
 	}
 	
-	private DeliciousAccount(AccountManager accountManager, Account account) {
+	private DeliciousAccount(Context context, AccountManager accountManager, Account account) {
 		this.accountManager = accountManager;
 		this.account = account;
 		
-		crypto = new Crypto(SecureConstants.ENCRYPTION_KEY);
+		// Use ANDROID_ID as key
+		String key = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+		crypto = new Crypto(key);
 	}
 
 	public String getUsername() {
