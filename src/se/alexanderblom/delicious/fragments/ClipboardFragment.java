@@ -80,6 +80,14 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 		// It's not valid to run fragments transactions after this
 		handler.removeCallbacks(hideRunnable);
 	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		// Make sure it's removed
+		handler.removeCallbacks(hideRunnable);
+	}
 
 	@Override
 	public void onPrimaryClipChanged() {
@@ -126,6 +134,7 @@ public class ClipboardFragment extends Fragment implements ClipboardManager.OnPr
 	
 	private void hideClipboard() {
 		currentUrl = null;
+		
 		getFragmentManager().beginTransaction()
 				.hide(this)
 				.commit();
